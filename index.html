@@ -1162,20 +1162,6 @@ html.js .reveal-right.revealed {
   line-height: 1.65;
 }
 
-/* priv breakpoints → see RESPONSIVE block below */
-
-/* =============================================
-   SECTION 11: GALERIE
-   ============================================= */
-#galerie {
-  background: var(--ivory);
-  padding: var(--section-pad) 0;
-}
-.galerie-header {
-  margin-bottom: clamp(24px,2.5vw,36px);
-}
-.galerie-header .eyebrow { margin-bottom: 20px; }
-
 .bento {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1195,11 +1181,6 @@ html.js .reveal-right.revealed {
   transition: transform .6s cubic-bezier(.2,.7,.2,1);
 }
 .bento-item:hover img { transform: scale(1.04); }
-/* Mise en page : 2 photos, 2 photos, puis une paire panoramique 2:4 */
-.bento-item:nth-child(-n+4) { grid-column: span 3; }
-.bento-item:nth-child(5) { grid-column: span 2; }
-.bento-item:nth-child(6) { grid-column: span 4; }
-.bento-item:nth-child(n+7) { grid-column: span 2; }
 
 .bento-cap {
   position: absolute;
@@ -1217,47 +1198,74 @@ html.js .reveal-right.revealed {
 }
 .bento-item:hover .bento-cap { opacity: 1; }
 
-/* ── Bento layout
-   ┌───────────┬───────────┬───────────┐
-   │     A     │     A     │     B     │  row 1
-   ├───────────┼───────────┼───────────┤
-   │     C     │           │     E     │  row 2
-   ├───────────┤     D     ├───────────┤
-   │     F     │           │     H     │  row 3
-   ├───────────┼───────────┼───────────┤
-   │           │     J     │     K     │  row 4
-   │     I     ├───────────┼───────────┤
-   │           │     X     │     L     │  row 5
-   └───────────┴───────────┴───────────┘
-*/
-.bento-item:nth-child(1)  { grid-column: 1 / 3; grid-row: 1; }   /* A */
-.bento-item:nth-child(2)  { grid-column: 3;     grid-row: 1; }   /* B */
-.bento-item:nth-child(3)  { grid-column: 1;     grid-row: 2; }   /* C */
-.bento-item:nth-child(4)  { grid-column: 2;     grid-row: 2 / 4; } /* D */
-.bento-item:nth-child(5)  { grid-column: 3;     grid-row: 2; }   /* E */
-.bento-item:nth-child(6)  { grid-column: 1;     grid-row: 3; }   /* F */
-.bento-item:nth-child(7)  { grid-column: 3;     grid-row: 3; }   /* H */
-.bento-item:nth-child(8)  { grid-column: 1;     grid-row: 4 / 6; } /* I */
-.bento-item:nth-child(9)  { grid-column: 2;     grid-row: 4; }   /* J */
-.bento-item:nth-child(10) { grid-column: 3;     grid-row: 4; }   /* K */
-.bento-item:nth-child(11) { grid-column: 2;     grid-row: 5; }   /* X */
-.bento-item:nth-child(12) { grid-column: 3;     grid-row: 5; }   /* L */
+/* ── Desktop (3 colonnes) */
+.bento-item:nth-child(1)  { grid-column: 1 / 3; grid-row: 1; }
+.bento-item:nth-child(2)  { grid-column: 3;     grid-row: 1; }
+.bento-item:nth-child(3)  { grid-column: 1;     grid-row: 2; }
+.bento-item:nth-child(4)  { grid-column: 2;     grid-row: 2 / 4; }
+.bento-item:nth-child(5)  { grid-column: 3;     grid-row: 2; }
+.bento-item:nth-child(6)  { grid-column: 1;     grid-row: 3; }
+.bento-item:nth-child(7)  { grid-column: 3;     grid-row: 3; }
+.bento-item:nth-child(8)  { grid-column: 1;     grid-row: 4 / 6; }
+.bento-item:nth-child(9)  { grid-column: 2;     grid-row: 4; }
+.bento-item:nth-child(10) { grid-column: 3;     grid-row: 4; }
+.bento-item:nth-child(11) { grid-column: 2;     grid-row: 5; }
+.bento-item:nth-child(12) { grid-column: 3;     grid-row: 5; }
 
 .galerie-btn {
   text-align: center;
   margin-top: clamp(32px,4vw,48px);
 }
 
-@media (max-width:767px) {
+/* ── Mobile (2 colonnes, placement automatique) */
+@media (max-width: 767px) {
   .bento {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: clamp(180px, 42vw, 280px);
+    grid-auto-rows: clamp(150px, 40vw, 260px);
+    grid-auto-flow: row dense;
     gap: 8px;
   }
-  .bento-item { grid-column: span 1 !important; }
-  .bento-item:nth-child(5), .bento-item:nth-child(6) { grid-column: span 1 !important; }
-  .bento-cap { opacity: 1; }
+
+  /* reset total du placement desktop */
+  .bento-item:nth-child(n) {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  /* grandes images pleine largeur */
+  .bento-item:nth-child(1),
+  .bento-item:nth-child(7) {
+    grid-column: 1 / -1;
+  }
+
+  /* images hautes (2 lignes) */
+  .bento-item:nth-child(4),
+  .bento-item:nth-child(8) {
+    grid-row: span 2;
+  }
+
+  .bento-cap { opacity: 1; padding: 12px 14px; font-size: 11px; }
 }
+
+/* priv breakpoints → see RESPONSIVE block below */
+
+/* =============================================
+   SECTION 11: GALERIE
+   ============================================= */
+#galerie {
+  background: var(--ivory);
+  padding: var(--section-pad) 0;
+}
+.galerie-header {
+  margin-bottom: clamp(24px,2.5vw,36px);
+}
+.galerie-header .eyebrow { margin-bottom: 20px; }
+
+.galerie-btn {
+  text-align: center;
+  margin-top: clamp(32px,4vw,48px);
+}
+
 
 /* Lightbox */
 #lightbox {
@@ -1512,6 +1520,12 @@ html.js .reveal-right.revealed {
   color: var(--ink-soft);
 }
 
+@media (max-width:767px) {
+  .check-row span {
+  font-size: 10px;
+}
+}
+
 /* Summary sidebar */
 .reserver-summary {
   position: sticky;
@@ -1651,7 +1665,7 @@ html.js .reveal-right.revealed {
 /* --- NAV mobile --- */
 @media (max-width:480px) {
   .nav-logo { font-size: 17px; }
-  .nav-right { gap: 12px; }
+  .nav-right { gap: 12px; margin-right: 10px; }
 }
 
 /* --- HERO --- */
@@ -1733,10 +1747,6 @@ html.js .reveal-right.revealed {
   .priv-img { max-height: 260px; }
 }
 
-/* --- GALERIE compacte sur petits écrans, images toujours généreuses --- */
-@media (max-width:575px) {
-  .bento { grid-auto-rows: clamp(160px, 48vw, 230px); gap: 6px; }
-}
 
 /* --- FAQ --- */
 @media (max-width:991px) {
