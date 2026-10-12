@@ -1692,10 +1692,8 @@ html.js .reveal-right.revealed {
 @media (max-width:991px) {
   .ile-mosaic { aspect-ratio: 3/4; max-height: 420px; }
 }
-@media (max-width:480px) {
-  .ile-mosaic { grid-template-columns: 1fr; grid-template-rows: auto auto auto; aspect-ratio: auto; max-height: none; }
-  .ile-mosaic-tall { grid-row: auto; aspect-ratio: 16/9; }
-  .ile-mosaic-small { aspect-ratio: 16/9; min-height: auto; }
+@media (max-width:768px) {
+  .ile-mosaic { display: none; }
 }
 
 /* --- CITATION --- */
@@ -2007,6 +2005,7 @@ html.js .reveal-right.revealed {
   .carousel-item {
     flex: 0 0 100%;
     min-width: 280px;
+    max-width: 100%;
   }
 
   .carousel-arrow {
@@ -2025,6 +2024,41 @@ html.js .reveal-right.revealed {
 
   .carousel-item-title {
     font-size: 20px;
+  }
+
+  .evenements-header h2 {
+    font-size: clamp(28px, 7vw, 36px);
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-wrapper {
+    padding: 0 36px;
+  }
+
+  .carousel-item {
+    min-width: 240px;
+  }
+
+  .carousel-arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .carousel-item-overlay {
+    padding: 20px 16px;
+  }
+
+  .carousel-item-title {
+    font-size: 18px;
+  }
+
+  .carousel-item-description {
+    font-size: 13px;
+  }
+
+  .evenements-header {
+    margin-bottom: 32px;
   }
 }
 
