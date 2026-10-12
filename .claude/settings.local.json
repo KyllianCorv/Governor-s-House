@@ -11,7 +11,9 @@
       "Bash(git push:*)",
       "Bash(xargs sed:*)",
       "Bash(vercel --prod:*)",
-      "Bash(npx vercel --prod)"
+      "Bash(npx vercel --prod)",
+      "WebFetch(domain:www.governorshouse.mu)",
+      "WebFetch(domain:governorshouse.vercel.app)"
     ]
   }
 }

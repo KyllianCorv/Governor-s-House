@@ -1,3 +1,15 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /admin.html
+Disallow: /googlebd1ac5168ebe6b58.html
+
+# Sitemap
 Sitemap: https://www.governorshouse.mu/sitemap.xml
+
+# Crawl-delay for specific bots (optional)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /

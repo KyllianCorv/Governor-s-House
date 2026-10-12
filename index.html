@@ -1,8 +1,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>The Governor's House - Flat Island, restaurant &amp; beach club</title>
-<meta name="description" content="Restaurant et beach club sur l’île Plate, au large de Grand Baie. Deux formules : déjeuner à table ou journée beach club sur le sable.">
+<title>Restaurant Île Plate Maurice | Beach Club Grand Baie - Governor's House</title>
+<meta name="description" content="Restaurant & beach club exclusif sur l'île Plate (Flat Island), au large de Grand Baie, Maurice. Déjeuner gastronomique, journée beach club, snorkeling, plage privée. Privatisation possible. Réservation en ligne.">
+<meta name="keywords" content="restaurant île Maurice, île Plate Maurice, beach club Maurice, excursion Grand Baie, restaurant Grand Baie, île privée Maurice, snorkeling Maurice, privatisation île Maurice, Flat Island, déjeuner île Plate">
 <link rel="canonical" href="https://www.governorshouse.mu/">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#0E1B2C">
@@ -21,8 +22,8 @@
 <meta property="og:site_name" content="Governor's House">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:url" content="https://www.governorshouse.mu/">
-<meta property="og:title" content="The The Governor's House - Flat Island : une île, une table, une journée entière">
-<meta property="og:description" content="Restaurant et beach club sur l’île Plate, au large de Grand Baie. Deux formules, entre table et plage.">
+<meta property="og:title" content="Restaurant Île Plate Maurice | Beach Club Exclusif - Governor's House">
+<meta property="og:description" content="Restaurant & beach club exclusif sur l'île Plate, Maurice. Déjeuner gastronomique, plage privée, snorkeling. Une journée inoubliable au paradis.">
 <meta property="og:image" content="https://www.governorshouse.mu/images/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -30,8 +31,8 @@
 
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Governor's House, Flat Island">
-<meta name="twitter:description" content="Restaurant et beach club sur l'île Plate, au large de Grand Baie.">
+<meta name="twitter:title" content="Restaurant Île Plate Maurice | Beach Club - Governor's House">
+<meta name="twitter:description" content="Restaurant & beach club exclusif sur l'île Plate, Maurice. Déjeuner gastronomique, plage privée, snorkeling.">
 <meta name="twitter:image" content="https://www.governorshouse.mu/images/og-cover.jpg">
 
 <!-- Fonts -->
@@ -55,41 +56,136 @@
       "inLanguage": "fr"
     },
     {
-      "@type": ["Restaurant", "TouristAttraction"],
+      "@type": ["Restaurant", "TouristAttraction", "BeachClub"],
       "@id": "https://www.governorshouse.mu/#restaurant",
       "name": "The Governor's House",
-      "description": "Restaurant et beach club sur l’île Plate, au large de la côte nord de Maurice. Deux formules : déjeuner à table ou journée beach club sur la plage.",
+      "alternateName": "Governor's House Flat Island",
+      "description": "Restaurant et beach club exclusif sur l'île Plate (Flat Island), au large de Grand Baie, Maurice. Déjeuner gastronomique, journée beach club, snorkeling, plage privée. Privatisation possible pour événements.",
       "url": "https://www.governorshouse.mu/",
-      "image": "https://www.governorshouse.mu/images/og-cover.jpg",
+      "image": [
+        "https://www.governorshouse.mu/images/og-cover.jpg"
+      ],
+      "logo": "https://www.governorshouse.mu/favicon.svg",
       "telephone": "+23058063313",
-            "servesCuisine": ["Fruits de mer"],
+      "email": "contact@governorshouse.mu",
+      "servesCuisine": ["Fruits de mer", "Cuisine française", "Cuisine créole", "Cuisine fusion"],
       "priceRange": "€€€",
       "currenciesAccepted": "EUR",
+      "paymentAccepted": ["Cash", "Credit Card", "Bank Transfer"],
+      "acceptsReservations": true,
+      "hasMap": "https://goo.gl/maps/flat-island",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Flat Island (Île Plate)",
         "addressRegion": "Rivière du Rempart",
         "addressCountry": "MU"
       },
-      "geo": { "@type": "GeoCoordinates", "latitude": -19.8833, "longitude": 57.65 },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -19.8833,
+        "longitude": 57.65
+      },
       "openingHoursSpecification": {
         "@type": "OpeningHoursSpecification",
         "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
         "opens": "08:30",
         "closes": "15:30"
       },
+      "amenityFeature": [
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Plage privée",
+          "value": true
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Snorkeling",
+          "value": true
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Beach club",
+          "value": true
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "Privatisation",
+          "value": true
+        },
+        {
+          "@type": "LocationFeatureSpecification",
+          "name": "DJ set",
+          "value": true
+        }
+      ],
       "makesOffer": [
         {
           "@type": "Offer",
           "name": "Le Déjeuner du Gouverneur",
+          "description": "Déjeuner gastronomique sur l'île Plate avec menu complet",
           "price": "200",
-          "priceCurrency": "EUR"
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock",
+          "url": "https://www.governorshouse.mu/#formules"
         },
         {
           "@type": "Offer",
           "name": "Flat Island Beach Menu",
+          "description": "Journée beach club avec finger food, boissons et DJ set",
           "price": "100",
-          "priceCurrency": "EUR"
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock",
+          "url": "https://www.governorshouse.mu/#formules"
+        }
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "reviewCount": "1"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.governorshouse.mu/#organization",
+      "name": "The Governor's House",
+      "url": "https://www.governorshouse.mu/",
+      "logo": "https://www.governorshouse.mu/favicon.svg",
+      "image": "https://www.governorshouse.mu/images/og-cover.jpg",
+      "description": "Restaurant et beach club exclusif sur l'île Plate, Maurice",
+      "email": "contact@governorshouse.mu",
+      "telephone": "+23058063313",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Flat Island",
+        "addressRegion": "Rivière du Rempart",
+        "addressCountry": "MU"
+      },
+      "sameAs": [
+        "https://www.facebook.com/governorshouse",
+        "https://www.instagram.com/governorshouse"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://www.governorshouse.mu/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Accueil",
+          "item": "https://www.governorshouse.mu/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Nos Formules",
+          "item": "https://www.governorshouse.mu/#formules"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Réservation",
+          "item": "https://www.governorshouse.mu/#reserver"
         }
       ]
     },
@@ -97,14 +193,14 @@
       "@type": "FAQPage",
       "mainEntity": [
         {"@type":"Question","name":"À quelle distance est l'île ?","acceptedAnswer":{"@type":"Answer","text":"L'île Plate se trouve à 25 minutes en bateau rapide depuis le Sunset Café, à Grand Baie. En catamaran, comptez 1h15."}},
-        {"@type":"Question","name":"La réservation est-elle obligatoire ?","acceptedAnswer":{"@type":"Answer","text":"Oui, toutes nos excursions sont sur réservation uniquement. Nous vous confirmons la veille au soir le bateau et l’horaire exact de départ."}},
-        {"@type":"Question","name":"Quelles sont les conditions météo à prévoir ?","acceptedAnswer":{"@type":"Answer","text":"Nous ouvrons toute l’année, selon l’état de la mer. Au-delà de 25 nœuds de vent, la traversée est reportée sans frais ou intégralement remboursée -avis de cyclone compris. La décision est prise la veille au soir et nous vous prévenons directement."}},
+        {"@type":"Question","name":"La réservation est-elle obligatoire ?","acceptedAnswer":{"@type":"Answer","text":"Oui, toutes nos excursions sont sur réservation uniquement. Nous vous confirmons la veille au soir le bateau et l'horaire exact de départ."}},
+        {"@type":"Question","name":"Quelles sont les conditions météo à prévoir ?","acceptedAnswer":{"@type":"Answer","text":"Nous ouvrons toute l'année, selon l'état de la mer. Au-delà de 25 nœuds de vent, la traversée est reportée sans frais ou intégralement remboursée -avis de cyclone compris. La décision est prise la veille au soir et nous vous prévenons directement."}},
         {"@type":"Question","name":"Les enfants sont-ils les bienvenus ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Des portions enfants sont disponibles sur demande et le lagon peu profond convient aux jeunes baigneurs."}},
-        {"@type":"Question","name":"Comment fonctionne la privatisation ?","acceptedAnswer":{"@type":"Answer","text":"La privatisation signifie que votre groupe occupe seul le site du Governor’s House pour la journée. Menu, décoration et programme sont construits avec vous."}},
+        {"@type":"Question","name":"Comment fonctionne la privatisation ?","acceptedAnswer":{"@type":"Answer","text":"La privatisation signifie que votre groupe occupe seul le site du Governor's House pour la journée. Menu, décoration et programme sont construits avec vous."}},
         {"@type":"Question","name":"Quels régimes alimentaires sont pris en charge ?","acceptedAnswer":{"@type":"Answer","text":"Végétarien, vegan, sans gluten, sans lactose. Précisez vos contraintes à la réservation."}},
         {"@type":"Question","name":"Y a-t-il un parking au ponton de départ ?","acceptedAnswer":{"@type":"Answer","text":"Un parking est disponible à proximité immédiate du Sunset Café, à Grand Baie."}},
-        {"@type":"Question","name":"Que comprend exactement le Flat Island Beach Menu ?","acceptedAnswer":{"@type":"Answer","text":"100 € par personne, hors traversée. L’espace réservé sur la plage avec transat, coussin et voile d’ombrage, le service de plage en continu, la serviette fraîche à l’arrivée, le finger food servi en continu toute la journée, les softs à volonté et cinq consommations au choix (cocktails ou bière). L’après-midi, DJ set sur la plage. La traversée aller-retour est en option, 30 € par personne."}},
-        {"@type":"Question","name":"Que faut-il emporter ?","acceptedAnswer":{"@type":"Answer","text":"Un maillot, de la crème solaire, un chapeau. Nous fournissons les serviettes, l’ombrage et le matériel de snorkeling. L’île Plate est un site protégé : tout ce qui arrive avec nous repart avec nous, rien ne reste sur place."}}
+        {"@type":"Question","name":"Que comprend exactement le Flat Island Beach Menu ?","acceptedAnswer":{"@type":"Answer","text":"100 € par personne, hors traversée. L'espace réservé sur la plage avec transat, coussin et voile d'ombrage, le service de plage en continu, la serviette fraîche à l'arrivée, le finger food servi en continu toute la journée, les softs à volonté et cinq consommations au choix (cocktails ou bière). L'après-midi, DJ set sur la plage. La traversée aller-retour est en option, 30 € par personne."}},
+        {"@type":"Question","name":"Que faut-il emporter ?","acceptedAnswer":{"@type":"Answer","text":"Un maillot, de la crème solaire, un chapeau. Nous fournissons les serviettes, l'ombrage et le matériel de snorkeling. L'île Plate est un site protégé : tout ce qui arrive avec nous repart avec nous, rien ne reste sur place."}}
       ]
     }
   ]
