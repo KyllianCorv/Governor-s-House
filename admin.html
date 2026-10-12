@@ -619,6 +619,13 @@
         return;
       }
 
+      // Disable form during upload
+      const submitButton = document.querySelector('form button[type="submit"]');
+      const formInputs = document.querySelectorAll('form input, form textarea, form button');
+      formInputs.forEach(input => input.disabled = true);
+      dropZone.style.opacity = '0.5';
+      dropZone.style.pointerEvents = 'none';
+
       // Show progress
       uploadProgress.style.display = 'block';
       progressBar.style.width = '30%';
@@ -642,16 +649,22 @@
             })
           });
 
+          const data = await response.json();
+
           if (!response.ok) {
-            throw new Error('Erreur lors de l\'upload');
+            throw new Error(data.details || data.error || 'Erreur lors de l\'upload');
           }
 
-          const data = await response.json();
           progressBar.style.width = '100%';
           uploadStatus.textContent = 'Upload réussi!';
 
           // Set the image URL in the input
           imageInput.value = data.url;
+
+          // Re-enable form
+          formInputs.forEach(input => input.disabled = false);
+          dropZone.style.opacity = '1';
+          dropZone.style.pointerEvents = 'auto';
 
           // Hide progress after 2s
           setTimeout(() => {
@@ -667,6 +680,12 @@
         console.error('Upload error:', error);
         uploadProgress.style.display = 'none';
         progressBar.style.width = '0%';
+
+        // Re-enable form
+        formInputs.forEach(input => input.disabled = false);
+        dropZone.style.opacity = '1';
+        dropZone.style.pointerEvents = 'auto';
+
         showAlert('Erreur lors de l\'upload: ' + error.message, 'error');
       }
     }

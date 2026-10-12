@@ -2,6 +2,14 @@ import { put } from '@vercel/blob';
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'governorshouse2026';
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -31,10 +39,11 @@ export default async function handler(req, res) {
     const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
 
-    // Upload vers Vercel Blob
+    // Upload vers Vercel Blob avec token
     const blob = await put(filename, buffer, {
       access: 'public',
       addRandomSuffix: true,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
     return res.status(200).json({
@@ -44,6 +53,9 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Error uploading image:', error);
-    return res.status(500).json({ error: 'Erreur lors de l\'upload' });
+    return res.status(500).json({
+      error: 'Erreur lors de l\'upload',
+      details: error.message
+    });
   }
 }
