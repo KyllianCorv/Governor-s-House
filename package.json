@@ -1,6 +1,7 @@
 {
   "name": "governors-house",
   "version": "1.0.0",
+  "type": "module",
   "description": "The Governor's House - Flat Island restaurant & beach club",
   "scripts": {
     "dev": "vercel dev",

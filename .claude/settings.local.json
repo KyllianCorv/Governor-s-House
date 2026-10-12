@@ -5,7 +5,10 @@
       "Bash(python:*)",
       "Bash(ls:*)",
       "Bash(mkdir:*)",
-      "Bash(npm install)"
+      "Bash(npm install)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
