@@ -2002,7 +2002,7 @@ html.js .reveal-right.revealed {
   left: 0;
   right: 0;
   padding: 32px 24px;
-  background: linear-gradient(180deg, transparent 0%, rgba(14, 27, 44, 0.95) 50%, rgba(14, 27, 44, 1) 100%);
+  /* background: linear-gradient(180deg, transparent 0%, rgba(14, 27, 44, 0.95) 50%, rgba(14, 27, 44, 1) 100%); */
   color: var(--ivory);
 }
 
@@ -3524,11 +3524,12 @@ html.js .reveal-right.revealed {
 
     // Formater la date
     function formatDate(dateString) {
-      const date = new Date(dateString);
-      const options = { day: 'numeric', month: 'long', year: 'numeric' };
-      return date.toLocaleDateString('fr-FR', options);
+      if (!dateString) return '';
+      const m = String(dateString).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      const date = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(dateString);
+      if (isNaN(date.getTime())) return '';
+      return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     }
-
     // Render le carrousel
     function renderCarousel() {
       // Sur mobile : afficher seulement l'événement actuel
@@ -3541,7 +3542,7 @@ html.js .reveal-right.revealed {
           <div class="carousel-item" id="card-${actualIndex}">
             <img src="${event.image}" alt="${event.title}" loading="lazy">
             <div class="carousel-item-overlay">
-              <div class="carousel-item-date">${formatDate(event.date)}</div>
+              ${formatDate(event.date) ? `<div class="carousel-item-date">${formatDate(event.date)}</div>` : ''}
               <h3 class="carousel-item-title">${event.title}</h3>
               <p class="carousel-item-description">${event.description}</p>
             </div>
