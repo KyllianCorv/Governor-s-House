@@ -672,15 +672,15 @@
             </div>
             <div class="form-group">
               <label for="new-title">Titre</label>
-              <input type="text" id="new-title" placeholder="Soirée Beach Club" required>
+              <input type="text" id="new-title" placeholder="Soirée Beach Club">
             </div>
             <div class="form-group">
               <label for="new-date">Date</label>
-              <input type="date" id="new-date" required>
+              <input type="date" id="new-date">
             </div>
             <div class="form-group">
               <label for="new-description">Description</label>
-              <textarea id="new-description" placeholder="Description de l'événement" required></textarea>
+              <textarea id="new-description" placeholder="Description de l'événement"></textarea>
             </div>
             <button type="submit" class="btn btn-success">Ajouter l'événement</button>
           </form>
@@ -758,9 +758,10 @@
     }
 
     function formatDate(dateString) {
+      if (!dateString) return '';
       const date = new Date(dateString);
-      const options = { day: 'numeric', month: 'long', year: 'numeric' };
-      return date.toLocaleDateString('fr-FR', options);
+      if (isNaN(date)) return '';
+      return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
     function renderEvents() {
@@ -791,11 +792,11 @@
               <button onclick="deleteEvent(${index})" class="btn btn-danger btn-sm">Supprimer</button>
             </div>
           </div>
-          <div class="event-preview">
-            <img src="${event.image}" alt="${event.title}" class="event-preview-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22267%22%3E%3Crect fill=%22%23F3EDE3%22 width=%22200%22 height=%22267%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23B08D57%22 font-family=%22Playfair Display%22 font-size=%2216%22%3EImage%3C/text%3E%3C/svg%3E'">
+          <div class="event-preview" ${event.image ? '' : 'style="grid-template-columns:1fr"'}>
+            ${event.image ? `<img src="${event.image}" alt="${event.title}" class="event-preview-img" onerror="...">` : ''}
             <div class="event-preview-info">
-              <div class="event-date">${formatDate(event.date)}</div>
-              <p class="event-description">${event.description}</p>
+              ${event.date ? `<div class="event-date">${formatDate(event.date)}</div>` : ''}
+              ${event.description ? `<p class="event-description">${event.description}</p>` : ''}
             </div>
           </div>
         </div>
