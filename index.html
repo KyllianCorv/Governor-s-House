@@ -1851,6 +1851,7 @@ html.js .reveal-right.revealed {
   gap: 24px;
   justify-content: center;
   align-items: center;
+  min-height: 400px;
 }
 
 .carousel-loading {
@@ -1869,7 +1870,23 @@ html.js .reveal-right.revealed {
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.carousel-item {
+  animation: fadeIn 0.4s ease-out;
 }
 
 .carousel-item:hover {
@@ -3383,7 +3400,7 @@ html.js .reveal-right.revealed {
 
     let events = [];
     let currentIndex = 0;
-    let autoplayInterval;
+    let isMobile = window.innerWidth <= 767;
 
     // Charger les événements depuis l'API
     async function loadEvents() {
@@ -3396,9 +3413,8 @@ html.js .reveal-right.revealed {
           // Afficher la section si des événements existent
           document.getElementById('evenements').style.display = 'block';
           renderCarousel();
-          // Masquer les flèches et dots (affichage statique)
-          if (prevBtn) prevBtn.style.display = 'none';
-          if (nextBtn) nextBtn.style.display = 'none';
+          updateNavigation();
+          setupEventListeners();
         } else {
           // Masquer complètement la section si aucun événement
           document.getElementById('evenements').style.display = 'none';
@@ -3417,25 +3433,108 @@ html.js .reveal-right.revealed {
       return date.toLocaleDateString('fr-FR', options);
     }
 
-    // Render le carrousel (max 4 événements affichés)
+    // Render le carrousel
     function renderCarousel() {
-      // Afficher tous les événements (max 4)
-      carousel.innerHTML = events.slice(0, 4).map((event, index) => `
-        <div class="carousel-item" id="card-${index}">
-          <img src="${event.image}" alt="${event.title}" loading="lazy">
-          <div class="carousel-item-overlay">
-            <div class="carousel-item-date">${formatDate(event.date)}</div>
-            <h3 class="carousel-item-title">${event.title}</h3>
-            <p class="carousel-item-description">${event.description}</p>
-          </div>
-        </div>
-      `).join('');
+      // Sur mobile : afficher seulement l'événement actuel
+      // Sur desktop : afficher tous les événements (max 4)
+      const eventsToShow = isMobile ? [events[currentIndex]] : events.slice(0, 4);
 
-      // Pas besoin de dots pour un affichage statique
-      dotsContainer.innerHTML = '';
+      carousel.innerHTML = eventsToShow.map((event, index) => {
+        const actualIndex = isMobile ? currentIndex : index;
+        return `
+          <div class="carousel-item" id="card-${actualIndex}">
+            <img src="${event.image}" alt="${event.title}" loading="lazy">
+            <div class="carousel-item-overlay">
+              <div class="carousel-item-date">${formatDate(event.date)}</div>
+              <h3 class="carousel-item-title">${event.title}</h3>
+              <p class="carousel-item-description">${event.description}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateDots();
     }
 
+    // Mettre à jour les dots
+    function updateDots() {
+      if (!isMobile || events.length <= 1) {
+        dotsContainer.innerHTML = '';
+        return;
+      }
 
+      dotsContainer.innerHTML = events.map((_, index) =>
+        `<span class="carousel-dot ${index === currentIndex ? 'active' : ''}" data-index="${index}"></span>`
+      ).join('');
+
+      // Ajouter les event listeners aux dots
+      dotsContainer.querySelectorAll('.carousel-dot').forEach(dot => {
+        dot.addEventListener('click', () => {
+          currentIndex = parseInt(dot.dataset.index);
+          renderCarousel();
+          updateNavigation();
+        });
+      });
+    }
+
+    // Mettre à jour la navigation
+    function updateNavigation() {
+      if (!isMobile) {
+        // Desktop : masquer les flèches et dots
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+        dotsContainer.innerHTML = '';
+      } else {
+        // Mobile : afficher les flèches si plus d'un événement
+        const hasMultipleEvents = events.length > 1;
+        if (prevBtn) prevBtn.style.display = hasMultipleEvents ? 'flex' : 'none';
+        if (nextBtn) nextBtn.style.display = hasMultipleEvents ? 'flex' : 'none';
+
+        // Désactiver les boutons aux extrémités
+        if (prevBtn) prevBtn.disabled = currentIndex === 0;
+        if (nextBtn) nextBtn.disabled = currentIndex === events.length - 1;
+      }
+    }
+
+    // Navigation précédente
+    function goPrev() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderCarousel();
+        updateNavigation();
+      }
+    }
+
+    // Navigation suivante
+    function goNext() {
+      if (currentIndex < events.length - 1) {
+        currentIndex++;
+        renderCarousel();
+        updateNavigation();
+      }
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      if (prevBtn) prevBtn.addEventListener('click', goPrev);
+      if (nextBtn) nextBtn.addEventListener('click', goNext);
+
+      // Gérer le redimensionnement de la fenêtre
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          const wasMobile = isMobile;
+          isMobile = window.innerWidth <= 767;
+
+          if (wasMobile !== isMobile) {
+            currentIndex = 0;
+            renderCarousel();
+            updateNavigation();
+          }
+        }, 250);
+      });
+    }
 
     // Initialiser
     loadEvents();
