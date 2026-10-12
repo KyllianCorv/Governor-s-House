@@ -759,12 +759,13 @@
 
     function formatDate(dateString) {
       if (!dateString) return '';
-      const date = new Date(dateString);
-      if (isNaN(date)) return '';
+      const m = String(dateString).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      const date = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(dateString);
+      if (isNaN(date.getTime())) return '';
       return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
-    function renderEvents() {
+        function renderEvents() {
       const container = document.getElementById('events-list');
 
       if (events.length === 0) {
@@ -783,28 +784,33 @@
         return;
       }
 
-      container.innerHTML = events.map((event, index) => `
+      container.innerHTML = events.map((event, index) => {
+        const dateText = formatDate(event.date);
+        const imgFallback = "this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22267%22%3E%3Crect fill=%22%23F3EDE3%22 width=%22200%22 height=%22267%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23B08D57%22 font-family=%22Playfair Display%22 font-size=%2216%22%3EImage%3C/text%3E%3C/svg%3E'";
+
+        return `
         <div class="event-card">
           <div class="event-card-header">
-            <h3 class="event-card-title">${event.title}</h3>
+            <h3 class="event-card-title">${event.title || 'Sans titre'}</h3>
             <div class="event-card-actions">
               <button onclick="editEvent(${index})" class="btn btn-secondary btn-sm">Modifier</button>
               <button onclick="deleteEvent(${index})" class="btn btn-danger btn-sm">Supprimer</button>
             </div>
           </div>
           <div class="event-preview" ${event.image ? '' : 'style="grid-template-columns:1fr"'}>
-            ${event.image ? `<img src="${event.image}" alt="${event.title}" class="event-preview-img" onerror="...">` : ''}
+            ${event.image ? `<img src="${event.image}" alt="${event.title || ''}" class="event-preview-img" onerror="${imgFallback}">` : ''}
             <div class="event-preview-info">
-              ${event.date ? `<div class="event-date">${formatDate(event.date)}</div>` : ''}
+              ${dateText ? `<div class="event-date">${dateText}</div>` : ''}
               ${event.description ? `<p class="event-description">${event.description}</p>` : ''}
             </div>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
 
       updateFormState();
     }
-
+    
     function updateFormState() {
       const addForm = document.querySelector('.add-event-section form');
       const addButton = addForm?.querySelector('button[type="submit"]');
