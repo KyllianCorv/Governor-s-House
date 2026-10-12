@@ -1842,7 +1842,7 @@ html.js .reveal-right.revealed {
 
 .carousel-wrapper {
   position: relative;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 60px;
 }
@@ -1854,6 +1854,7 @@ html.js .reveal-right.revealed {
   overflow: hidden;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  justify-content: center;
 }
 
 .carousel-loading {
@@ -1864,8 +1865,9 @@ html.js .reveal-right.revealed {
 }
 
 .carousel-item {
-  flex: 0 0 calc(40% - 16px);
-  min-width: 360px;
+  flex: 0 0 calc(33.333% - 16px);
+  min-width: 300px;
+  max-width: 400px;
   aspect-ratio: 3/4;
   position: relative;
   border-radius: 8px;
@@ -1994,8 +1996,8 @@ html.js .reveal-right.revealed {
 
 @media (max-width: 1024px) {
   .carousel-item {
-    flex: 0 0 calc(60% - 12px);
-    min-width: 320px;
+    flex: 0 0 calc(50% - 12px);
+    min-width: 280px;
   }
 }
 
@@ -3411,32 +3413,75 @@ html.js .reveal-right.revealed {
       const containerWidth = carousel.offsetWidth;
       const itemWidth = items[0].offsetWidth;
       const gap = 24;
-      const offset = currentIndex * (itemWidth + gap);
 
+      // Calculer le nombre de slides visibles (max 3)
+      const slidesPerView = Math.min(3, Math.floor(containerWidth / (itemWidth + gap)));
+      const maxIndex = Math.max(0, events.length - slidesPerView);
+
+      // Limiter l'index
+      currentIndex = Math.min(currentIndex, maxIndex);
+
+      const offset = currentIndex * (itemWidth + gap);
       carousel.style.transform = `translateX(-${offset}px)`;
 
       // Mettre à jour les dots
       const dots = dotsContainer.querySelectorAll('.carousel-dot');
+      const totalPages = Math.ceil(events.length / slidesPerView);
+      const currentPage = Math.floor(currentIndex / slidesPerView);
+
       dots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentIndex);
+        dot.classList.toggle('active', index === currentPage);
       });
 
       // Désactiver les boutons si nécessaire
       prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex >= events.length - 1;
+      nextBtn.disabled = currentIndex >= maxIndex;
     }
 
     // Navigation
     function goToSlide(index) {
-      if (index < 0 || index >= events.length) return;
-      currentIndex = index;
+      const containerWidth = carousel.offsetWidth;
+      const items = carousel.querySelectorAll('.carousel-item');
+      if (items.length === 0) return;
+
+      const itemWidth = items[0].offsetWidth;
+      const gap = 24;
+      const slidesPerView = Math.min(3, Math.floor(containerWidth / (itemWidth + gap)));
+      const maxIndex = Math.max(0, events.length - slidesPerView);
+
+      if (index < 0) {
+        currentIndex = 0;
+      } else if (index > maxIndex) {
+        currentIndex = maxIndex;
+      } else {
+        currentIndex = index;
+      }
+
       updateCarouselPosition();
       resetAutoplay();
     }
 
     function setupNavigation() {
-      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
-      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+      // Navigation par page (3 slides à la fois ou moins)
+      prevBtn.addEventListener('click', () => {
+        const containerWidth = carousel.offsetWidth;
+        const items = carousel.querySelectorAll('.carousel-item');
+        if (items.length === 0) return;
+        const itemWidth = items[0].offsetWidth;
+        const gap = 24;
+        const slidesPerView = Math.min(3, Math.floor(containerWidth / (itemWidth + gap)));
+        goToSlide(currentIndex - slidesPerView);
+      });
+
+      nextBtn.addEventListener('click', () => {
+        const containerWidth = carousel.offsetWidth;
+        const items = carousel.querySelectorAll('.carousel-item');
+        if (items.length === 0) return;
+        const itemWidth = items[0].offsetWidth;
+        const gap = 24;
+        const slidesPerView = Math.min(3, Math.floor(containerWidth / (itemWidth + gap)));
+        goToSlide(currentIndex + slidesPerView);
+      });
 
       // Dots navigation
       dotsContainer.addEventListener('click', (e) => {
@@ -3481,10 +3526,18 @@ html.js .reveal-right.revealed {
     // Autoplay
     function startAutoplay() {
       autoplayInterval = setInterval(() => {
-        if (currentIndex >= events.length - 1) {
+        const containerWidth = carousel.offsetWidth;
+        const items = carousel.querySelectorAll('.carousel-item');
+        if (items.length === 0) return;
+        const itemWidth = items[0].offsetWidth;
+        const gap = 24;
+        const slidesPerView = Math.min(3, Math.floor(containerWidth / (itemWidth + gap)));
+        const maxIndex = Math.max(0, events.length - slidesPerView);
+
+        if (currentIndex >= maxIndex) {
           goToSlide(0);
         } else {
-          goToSlide(currentIndex + 1);
+          goToSlide(currentIndex + slidesPerView);
         }
       }, 5000);
     }
