@@ -3384,6 +3384,10 @@ html.js .reveal-right.revealed {
 
     // Render le carrousel (3 cartes fixes)
     function renderCarousel() {
+      // FORCER le conteneur à ne PAS bouger
+      carousel.style.transform = 'none';
+      carousel.style.transition = 'none';
+
       // Créer 3 cartes fixes
       carousel.innerHTML = `
         <div class="carousel-item" id="card-0"></div>
@@ -3404,6 +3408,10 @@ html.js .reveal-right.revealed {
 
     // Mettre à jour le contenu des cartes
     function updateCarouselContent() {
+      // FORCER le conteneur à ne PAS bouger
+      carousel.style.transform = 'none';
+      carousel.style.transition = 'none';
+
       const card0 = document.getElementById('card-0');
       const card1 = document.getElementById('card-1');
       const card2 = document.getElementById('card-2');
