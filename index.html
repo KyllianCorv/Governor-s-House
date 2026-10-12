@@ -3014,18 +3014,9 @@ html.js .reveal-right.revealed {
       <div>
         <p class="fc-title">Horaires & Départ</p>
         <ul class="fc-list" role="list">
-          <li><a href="https://maps.google.com/?q=Sunset+Cafe,+Grand+Baie,+Mauritius" target="_blank" rel="noopener noreferrer">9h Sunset Café, Grand Baie<br>Flat Island (Île Plate), Maurice</a></li>
+          <li><a href="https://maps.google.com/?q=Sunset+Cafe,+Grand+Baie,+Mauritius" target="_blank" rel="noopener noreferrer">9h Sunset Boulevard, Grand Baie<br>Flat Island (Île Plate), Maurice</a></li>
         </ul>
       </div>
-      <div>
-        <p class="fc-title">Horaires &amp; Départ</p>
-        <ul class="fc-list" role="list">
-          <li><span style="color:var(--ivory);opacity:.65;">Déjeuner &mdash; 7j/7, groupes le week-end</span></li>
-          <li><span style="color:var(--ivory);opacity:.65;">Beach Menu &mdash; Sam &amp; Dim</span></li>
-          <li style="margin-top:8px;"><span style="color:var(--ivory);opacity:.65;">Selon conditions de mer</span></li>
-        </ul>
-      </div>
-    
     </div>
 
     <p class="footer-wordmark" aria-hidden="true">The Governor's House.</p>
@@ -3334,11 +3325,13 @@ html.js .reveal-right.revealed {
   var formuleSelect = $('#f-formule');
   var formuleNames = {
     'gouverneur': 'Le Déjeuner du Gouverneur',
-    'sable': 'Flat Island Beach Menu'
+    'sable': 'Flat Island Beach Menu',
+    'sable-catamaran': 'Flat Island Beach Menu + Traversée en catamaran'
   };
   var formulePrices = {
     'gouverneur': 200,
-    'sable': 100
+    'sable': 100,
+    'sable-catamaran': 150
   };
 
   function updateSummary() {
