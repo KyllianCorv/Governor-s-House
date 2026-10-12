@@ -1851,10 +1851,8 @@ html.js .reveal-right.revealed {
   position: relative;
   display: flex;
   gap: 24px;
-  overflow: hidden;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  transition: transform 0.5s ease;
 }
 
 .carousel-loading {
@@ -1873,7 +1871,43 @@ html.js .reveal-right.revealed {
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-  transition: opacity 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.carousel-item.slide-out-left {
+  animation: slideOutLeft 0.5s ease forwards;
+}
+
+.carousel-item.slide-out-right {
+  animation: slideOutRight 0.5s ease forwards;
+}
+
+.carousel-item.slide-in-left {
+  animation: slideInLeft 0.5s ease forwards;
+}
+
+.carousel-item.slide-in-right {
+  animation: slideInRight 0.5s ease forwards;
+}
+
+@keyframes slideOutLeft {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-100%); opacity: 0; }
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 .carousel-item:hover {
@@ -3384,53 +3418,91 @@ html.js .reveal-right.revealed {
       return date.toLocaleDateString('fr-FR', options);
     }
 
-    // Render le carrousel (toutes les cartes)
+    // Render le carrousel (3 positions fixes)
     function renderCarousel() {
-      // Créer TOUTES les cartes
-      carousel.innerHTML = events.map((event, index) => `
-        <div class="carousel-item" data-index="${index}">
-          <img src="${event.image}" alt="${event.title}" loading="lazy">
-          <div class="carousel-item-overlay">
-            <div class="carousel-item-date">${formatDate(event.date)}</div>
-            <h3 class="carousel-item-title">${event.title}</h3>
-            <p class="carousel-item-description">${event.description}</p>
-          </div>
-        </div>
-      `).join('');
+      // Créer 3 cartes FIXES
+      carousel.innerHTML = `
+        <div class="carousel-item" id="card-left"></div>
+        <div class="carousel-item" id="card-center"></div>
+        <div class="carousel-item" id="card-right"></div>
+      `;
 
       // Render les dots (un par événement)
       dotsContainer.innerHTML = events.map((_, index) => `
         <button class="carousel-dot ${index === 0 ? 'active' : ''}" data-index="${index}" aria-label="Aller à l'événement ${index + 1}"></button>
       `).join('');
 
-      updateCarouselPosition();
+      updateCarouselContent(false);
     }
 
-    // Mettre à jour la position du carrousel
-    function updateCarouselPosition() {
-      const items = carousel.querySelectorAll('.carousel-item');
-      if (items.length === 0) return;
+    // Mettre à jour le contenu des 3 cartes
+    function updateCarouselContent(animate = true, direction = 'next') {
+      const cardLeft = document.getElementById('card-left');
+      const cardCenter = document.getElementById('card-center');
+      const cardRight = document.getElementById('card-right');
 
-      const itemWidth = items[0].offsetWidth;
-      const gap = 24;
+      if (!cardLeft || !cardCenter || !cardRight) return;
 
-      // Calculer le décalage pour centrer 3 cartes
-      const offset = currentIndex * (itemWidth + gap);
-      carousel.style.transform = `translateX(-${offset}px)`;
+      // Calculer les indices (avec boucle circulaire)
+      const leftIndex = (currentIndex - 1 + events.length) % events.length;
+      const centerIndex = currentIndex % events.length;
+      const rightIndex = (currentIndex + 1) % events.length;
+
+      // Fonction pour rendre le contenu d'une carte
+      const renderCardContent = (event) => `
+        <img src="${event.image}" alt="${event.title}" loading="lazy">
+        <div class="carousel-item-overlay">
+          <div class="carousel-item-date">${formatDate(event.date)}</div>
+          <h3 class="carousel-item-title">${event.title}</h3>
+          <p class="carousel-item-description">${event.description}</p>
+        </div>
+      `;
+
+      if (animate) {
+        // Animation de glissement
+        const animClass = direction === 'next' ? 'slide-out-left' : 'slide-out-right';
+        [cardLeft, cardCenter, cardRight].forEach(card => {
+          card.classList.add(animClass);
+        });
+
+        setTimeout(() => {
+          // Changer le contenu
+          cardLeft.innerHTML = renderCardContent(events[leftIndex]);
+          cardCenter.innerHTML = renderCardContent(events[centerIndex]);
+          cardRight.innerHTML = renderCardContent(events[rightIndex]);
+
+          // Retirer les anciennes classes et ajouter les nouvelles
+          [cardLeft, cardCenter, cardRight].forEach(card => {
+            card.classList.remove('slide-out-left', 'slide-out-right');
+            card.classList.add(direction === 'next' ? 'slide-in-right' : 'slide-in-left');
+          });
+
+          setTimeout(() => {
+            [cardLeft, cardCenter, cardRight].forEach(card => {
+              card.classList.remove('slide-in-left', 'slide-in-right');
+            });
+          }, 500);
+        }, 500);
+      } else {
+        // Pas d'animation (premier chargement)
+        cardLeft.innerHTML = renderCardContent(events[leftIndex]);
+        cardCenter.innerHTML = renderCardContent(events[centerIndex]);
+        cardRight.innerHTML = renderCardContent(events[rightIndex]);
+      }
 
       // Mettre à jour les dots
       const dots = dotsContainer.querySelectorAll('.carousel-dot');
       dots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentIndex);
+        dot.classList.toggle('active', index === centerIndex);
       });
 
-      // Boutons toujours actifs (défilement circulaire)
+      // Boutons toujours actifs (circulaire)
       prevBtn.disabled = false;
       nextBtn.disabled = false;
     }
 
     // Navigation (1 carte à la fois)
-    function goToSlide(index) {
+    function goToSlide(index, direction = 'next') {
       // Défilement circulaire
       if (index < 0) {
         currentIndex = events.length - 1;
@@ -3440,27 +3512,28 @@ html.js .reveal-right.revealed {
         currentIndex = index;
       }
 
-      updateCarouselPosition();
+      updateCarouselContent(true, direction);
       resetAutoplay();
     }
 
     function setupNavigation() {
       // Navigation 1 carte à la fois
-      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
-      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1, 'prev'));
+      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1, 'next'));
 
       // Dots navigation
       dotsContainer.addEventListener('click', (e) => {
         if (e.target.classList.contains('carousel-dot')) {
           const index = parseInt(e.target.dataset.index);
-          goToSlide(index);
+          const direction = index > currentIndex ? 'next' : 'prev';
+          goToSlide(index, direction);
         }
       });
 
       // Keyboard navigation
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') goToSlide(currentIndex - 1);
-        if (e.key === 'ArrowRight') goToSlide(currentIndex + 1);
+        if (e.key === 'ArrowLeft') goToSlide(currentIndex - 1, 'prev');
+        if (e.key === 'ArrowRight') goToSlide(currentIndex + 1, 'next');
       });
 
       // Touch swipe support
@@ -3478,21 +3551,18 @@ html.js .reveal-right.revealed {
 
       function handleSwipe() {
         if (touchStartX - touchEndX > 50) {
-          goToSlide(currentIndex + 1);
+          goToSlide(currentIndex + 1, 'next');
         }
         if (touchEndX - touchStartX > 50) {
-          goToSlide(currentIndex - 1);
+          goToSlide(currentIndex - 1, 'prev');
         }
       }
-
-      // Update on window resize
-      window.addEventListener('resize', updateCarouselPosition);
     }
 
     // Autoplay (1 carte toutes les 5s)
     function startAutoplay() {
       autoplayInterval = setInterval(() => {
-        goToSlide(currentIndex + 1);
+        goToSlide(currentIndex + 1, 'next');
       }, 5000);
     }
 
