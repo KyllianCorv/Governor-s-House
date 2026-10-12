@@ -3356,15 +3356,19 @@ html.js .reveal-right.revealed {
         events = data.events || [];
 
         if (events.length > 0) {
+          // Afficher la section si des événements existent
+          document.getElementById('evenements').style.display = 'block';
           renderCarousel();
           setupNavigation();
           startAutoplay();
         } else {
-          carousel.innerHTML = '<div class="carousel-loading"><p>Aucun événement à venir pour le moment.</p></div>';
+          // Masquer complètement la section si aucun événement
+          document.getElementById('evenements').style.display = 'none';
         }
       } catch (error) {
         console.error('Erreur lors du chargement des événements:', error);
-        carousel.innerHTML = '<div class="carousel-loading"><p>Erreur lors du chargement des événements.</p></div>';
+        // Masquer la section en cas d'erreur
+        document.getElementById('evenements').style.display = 'none';
       }
     }
 
