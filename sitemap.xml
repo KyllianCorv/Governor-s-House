@@ -2,6 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.governorshouse.mu/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2024-10-12</lastmod>
+    <priority>1.0</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.governorshouse.mu/admin.html</loc>
+    <lastmod>2024-10-12</lastmod>
+    <priority>0.3</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.governorshouse.mu/confidentialite.html</loc>
+    <lastmod>2024-10-12</lastmod>
+    <priority>0.3</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.governorshouse.mu/mentions-legales.html</loc>
+    <lastmod>2024-10-12</lastmod>
+    <priority>0.3</priority>
+    <changefreq>yearly</changefreq>
   </url>
 </urlset>
