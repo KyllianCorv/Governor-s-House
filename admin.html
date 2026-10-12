@@ -6,7 +6,31 @@
   <title>Admin - The Governor's House</title>
   <meta name="robots" content="noindex, nofollow">
 
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+
   <style>
+    /* =============================================
+       DESIGN TOKENS
+       ============================================= */
+    :root {
+      --ivory:   #FBF8F3;
+      --sand:    #F3EDE3;
+      --ink:     #0E1B2C;
+      --ink-soft:#4A5565;
+      --muted:   #8A8F98;
+      --brass:   #B08D57;
+      --line:    rgba(14,27,44,.12);
+      --shadow-sm: 0 2px 8px rgba(14, 27, 44, 0.06);
+      --shadow-md: 0 4px 16px rgba(14, 27, 44, 0.08);
+      --shadow-lg: 0 8px 32px rgba(14, 27, 44, 0.12);
+    }
+
+    /* =============================================
+       RESET & BASE
+       ============================================= */
     * {
       margin: 0;
       padding: 0;
@@ -14,54 +38,144 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f5f5;
-      padding: 20px;
+      font-family: 'Jost', system-ui, sans-serif;
+      background: var(--sand);
+      color: var(--ink);
       line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 8px;
-      padding: 40px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* =============================================
+       TYPOGRAPHY
+       ============================================= */
+    h1, h2, h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--ink);
     }
 
     h1 {
-      font-size: 32px;
+      font-size: clamp(32px, 4vw, 48px);
       margin-bottom: 8px;
-      color: #0E1B2C;
+    }
+
+    h2 {
+      font-size: clamp(24px, 3vw, 32px);
+      margin-bottom: 24px;
+    }
+
+    h3 {
+      font-size: clamp(20px, 2.5vw, 24px);
     }
 
     .subtitle {
-      color: #666;
+      font-family: 'Jost', sans-serif;
+      font-size: 14px;
+      color: var(--ink-soft);
       margin-bottom: 32px;
     }
 
-    .login-form {
-      max-width: 400px;
-      margin: 60px auto;
-    }
-
-    .admin-content {
-      display: none;
-    }
-
-    .admin-content.active {
+    .eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-weight: 500;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      color: var(--brass);
+      margin-bottom: 16px;
       display: block;
     }
 
+    /* =============================================
+       LAYOUT
+       ============================================= */
+    .admin-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-header {
+      background: var(--ink);
+      color: var(--ivory);
+      padding: 24px 0;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .admin-header .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 clamp(20px, 5vw, 40px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ivory);
+      text-decoration: none;
+      letter-spacing: .02em;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: clamp(32px, 5vw, 64px) clamp(20px, 5vw, 40px);
+    }
+
+    /* =============================================
+       LOGIN FORM
+       ============================================= */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--sand) 0%, var(--ivory) 100%);
+      padding: 20px;
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 12px;
+      padding: clamp(40px, 5vw, 64px);
+      box-shadow: var(--shadow-lg);
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .login-card h1 {
+      margin-bottom: 12px;
+    }
+
+    .login-card .subtitle {
+      margin-bottom: 40px;
+    }
+
+    /* =============================================
+       FORMS
+       ============================================= */
     .form-group {
       margin-bottom: 24px;
+      text-align: left;
     }
 
     label {
       display: block;
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
       font-weight: 500;
-      margin-bottom: 8px;
-      color: #0E1B2C;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--ink-soft);
+      margin-bottom: 12px;
     }
 
     input[type="text"],
@@ -70,44 +184,87 @@
     input[type="url"],
     textarea {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 15px;
+      font-family: 'Jost', sans-serif;
+      color: var(--ink);
+      background: var(--ivory);
+      transition: all 0.3s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--brass);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.1);
     }
 
     textarea {
-      min-height: 80px;
+      min-height: 100px;
       resize: vertical;
     }
 
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: var(--muted);
+    }
+
+    small {
+      font-size: 12px;
+      color: var(--muted);
+      display: block;
+      margin-top: 8px;
+    }
+
+    /* =============================================
+       BUTTONS
+       ============================================= */
     .btn {
-      padding: 12px 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
       border: none;
-      border-radius: 4px;
-      font-size: 14px;
+      border-radius: 6px;
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
       font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .1em;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
+      text-decoration: none;
     }
 
     .btn-primary {
-      background: #0E1B2C;
-      color: white;
+      background: var(--ink);
+      color: var(--ivory);
     }
 
     .btn-primary:hover {
-      background: #1a2942;
+      background: var(--brass);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .btn-secondary {
-      background: #e0e0e0;
-      color: #333;
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--ink);
     }
 
     .btn-secondary:hover {
-      background: #d0d0d0;
+      background: var(--ink);
+      color: var(--ivory);
     }
 
     .btn-danger {
@@ -117,256 +274,417 @@
 
     .btn-danger:hover {
       background: #c82333;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
     .btn-success {
-      background: #28a745;
+      background: var(--brass);
       color: white;
     }
 
     .btn-success:hover {
-      background: #218838;
+      background: #9d7744;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-sm {
+      padding: 10px 20px;
+      font-size: 12px;
+    }
+
+    .btn-logout {
+      background: transparent;
+      color: var(--ivory);
+      border: 1px solid rgba(251, 248, 243, 0.3);
+      padding: 10px 20px;
+      font-size: 12px;
+    }
+
+    .btn-logout:hover {
+      background: rgba(251, 248, 243, 0.1);
+      border-color: var(--ivory);
+    }
+
+    /* =============================================
+       ALERTS
+       ============================================= */
+    .alert {
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      line-height: 1.6;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+
+    /* =============================================
+       EVENTS LIST
+       ============================================= */
+    .section-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
     }
 
     .events-list {
       display: grid;
-      gap: 24px;
-      margin-bottom: 40px;
+      gap: 32px;
+      margin-bottom: 48px;
     }
 
     .event-card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 24px;
-      background: #fafafa;
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--line);
+      transition: all 0.3s ease;
+    }
+
+    .event-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
 
     .event-card-header {
       display: flex;
       justify-content: space-between;
       align-items: start;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
+      gap: 20px;
     }
 
     .event-card-title {
-      font-size: 20px;
-      font-weight: 500;
-      color: #0E1B2C;
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--ink);
+      margin: 0;
     }
 
     .event-card-actions {
       display: flex;
-      gap: 8px;
+      gap: 12px;
+      flex-shrink: 0;
     }
 
     .event-preview {
-      display: flex;
-      gap: 16px;
-      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 32px;
     }
 
     .event-preview-img {
-      width: 120px;
-      height: 160px;
+      width: 100%;
+      aspect-ratio: 3/4;
       object-fit: cover;
-      border-radius: 4px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
     }
 
     .event-preview-info {
-      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .event-date {
-      color: #B08D57;
+      font-family: 'Jost', sans-serif;
+      color: var(--brass);
       font-size: 12px;
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      margin-bottom: 8px;
     }
 
     .event-description {
-      color: #666;
-      font-size: 14px;
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.7;
     }
 
-    .alert {
-      padding: 12px 16px;
-      border-radius: 4px;
-      margin-bottom: 20px;
+    .empty-state {
+      text-align: center;
+      padding: 64px 20px;
+      color: var(--muted);
     }
 
-    .alert-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      opacity: 0.3;
+      margin-bottom: 16px;
     }
 
-    .alert-error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-
+    /* =============================================
+       ADD EVENT SECTION
+       ============================================= */
     .add-event-section {
-      margin-top: 40px;
-      padding-top: 40px;
-      border-top: 2px solid #e0e0e0;
-    }
-
-    .header-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 32px;
-    }
-
-    .btn-logout {
-      background: transparent;
-      color: #666;
-      border: 1px solid #ddd;
-    }
-
-    .btn-logout:hover {
-      background: #f5f5f5;
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--line);
+      margin-top: 48px;
     }
 
     .drop-zone {
-      border: 2px dashed #ddd;
-      border-radius: 8px;
-      padding: 40px 20px;
+      border: 2px dashed var(--line);
+      border-radius: 12px;
+      padding: 48px 32px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s;
-      margin-bottom: 24px;
-      background: #fafafa;
+      transition: all 0.3s ease;
+      margin-bottom: 32px;
+      background: var(--ivory);
     }
 
     .drop-zone:hover {
-      border-color: #0E1B2C;
-      background: #f5f5f5;
+      border-color: var(--brass);
+      background: var(--sand);
     }
 
     .drop-zone.dragging {
-      border-color: #0E1B2C;
-      background: #e8f4f8;
+      border-color: var(--brass);
+      background: rgba(176, 141, 87, 0.05);
       border-style: solid;
     }
 
     .drop-zone svg {
-      color: #666;
-      margin-bottom: 16px;
+      color: var(--brass);
+      margin-bottom: 20px;
     }
 
     .drop-zone p {
-      margin: 8px 0;
-      color: #333;
+      margin: 12px 0;
+      color: var(--ink);
+      font-size: 15px;
+    }
+
+    .drop-zone strong {
+      color: var(--ink);
     }
 
     .drop-zone small {
-      color: #999;
-      font-size: 12px;
+      color: var(--muted);
+      font-size: 13px;
     }
 
+    #upload-progress {
+      background: var(--ivory);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .progress-bar-container {
+      background: var(--sand);
+      border-radius: 4px;
+      overflow: hidden;
+      height: 6px;
+      margin-bottom: 12px;
+    }
+
+    #progress-bar {
+      height: 100%;
+      background: var(--brass);
+      transition: width 0.3s ease;
+    }
+
+    #upload-status {
+      font-size: 13px;
+      color: var(--ink-soft);
+      text-align: center;
+    }
+
+    /* =============================================
+       ADMIN CONTENT
+       ============================================= */
+    .admin-content {
+      display: none;
+    }
+
+    .admin-content.active {
+      display: block;
+    }
+
+    /* =============================================
+       RESPONSIVE
+       ============================================= */
     @media (max-width: 768px) {
-      .container {
-        padding: 20px;
+      .admin-header .container {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
       }
 
       .event-preview {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        gap: 20px;
       }
 
       .event-preview-img {
+        max-width: 100%;
+      }
+
+      .event-card {
+        padding: 24px;
+      }
+
+      .event-card-header {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .event-card-actions {
         width: 100%;
-        height: 200px;
+        justify-content: stretch;
+      }
+
+      .event-card-actions .btn {
+        flex: 1;
+      }
+
+      .add-event-section {
+        padding: 28px 20px;
+      }
+
+      .drop-zone {
+        padding: 32px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 32px 24px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .btn {
+        padding: 12px 20px;
+        font-size: 12px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="admin-wrapper">
     <!-- Login Form -->
-    <div id="login-form" class="login-form">
-      <h1>Admin Panel</h1>
-      <p class="subtitle">The Governor's House</p>
+    <div id="login-form" class="login-container">
+      <div class="login-card">
+        <h1>Admin Panel</h1>
+        <p class="subtitle">The Governor's House</p>
 
-      <div id="login-error" class="alert alert-error" style="display: none;"></div>
+        <div id="login-error" class="alert alert-error" style="display: none;"></div>
 
-      <form onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label for="password">Mot de passe</label>
-          <input type="password" id="password" required autocomplete="current-password">
-        </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%;">Se connecter</button>
-      </form>
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Se connecter</button>
+        </form>
+      </div>
     </div>
 
     <!-- Admin Content -->
     <div id="admin-content" class="admin-content">
-      <div class="header-actions">
-        <div>
-          <h1>Gestion des Événements</h1>
-          <p class="subtitle">Modifiez les événements du carrousel</p>
+      <div class="admin-header">
+        <div class="container">
+          <a href="/" class="admin-logo">The Governor's House</a>
+          <button onclick="logout()" class="btn btn-logout">Déconnexion</button>
         </div>
-        <button onclick="logout()" class="btn btn-logout">Déconnexion</button>
       </div>
 
-      <div id="alert-container"></div>
-
-      <!-- Events List -->
-      <div id="events-list" class="events-list"></div>
-
-      <!-- Add New Event -->
-      <div class="add-event-section">
-        <h2 style="margin-bottom: 24px;">Ajouter un événement</h2>
-
-        <!-- Limit Message -->
-        <div id="limit-message" class="alert alert-error" style="display: none; margin-bottom: 24px;">
-          <strong>Limite atteinte :</strong> Vous avez atteint la limite de 4 événements. Supprimez un événement existant pour en ajouter un nouveau.
+      <div class="container">
+        <div class="section-header">
+          <span class="eyebrow">Administration</span>
+          <h1>Gestion des Événements</h1>
+          <p class="subtitle">Gérez les événements affichés dans le carrousel sur la page d'accueil (maximum 4 événements)</p>
         </div>
 
-        <!-- Drag & Drop Zone -->
-        <div id="drop-zone" class="drop-zone">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-          <p><strong>Glissez une image ici</strong> ou cliquez pour sélectionner</p>
-          <small>JPG, PNG, WebP • Max 5MB • Format portrait recommandé (3:4)</small>
-          <input type="file" id="file-input" accept="image/*" style="display: none;">
-        </div>
+        <div id="alert-container"></div>
 
-        <div id="upload-progress" style="display: none; margin: 16px 0;">
-          <div style="background: #e0e0e0; border-radius: 4px; overflow: hidden;">
-            <div id="progress-bar" style="height: 4px; background: #0E1B2C; width: 0%; transition: width 0.3s;"></div>
-          </div>
-          <p id="upload-status" style="font-size: 14px; color: #666; margin-top: 8px;"></p>
-        </div>
+        <!-- Events List -->
+        <div id="events-list" class="events-list"></div>
 
-        <form onsubmit="handleAddEvent(event)">
-          <div class="form-group">
-            <label for="new-image">Chemin ou URL de l'image</label>
-            <input type="text" id="new-image" placeholder="/images/IMG_4988.jpeg" required>
-            <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
-              Chemin local, URL, ou uploadez via drag & drop ci-dessus
-            </small>
+        <!-- Add New Event -->
+        <div class="add-event-section">
+          <h2>Ajouter un événement</h2>
+
+          <!-- Limit Message -->
+          <div id="limit-message" class="alert alert-error" style="display: none;">
+            <strong>Limite atteinte :</strong> Vous avez atteint la limite de 4 événements. Supprimez un événement existant pour en ajouter un nouveau.
           </div>
-          <div class="form-group">
-            <label for="new-title">Titre</label>
-            <input type="text" id="new-title" placeholder="Soirée Beach Club" required>
+
+          <!-- Drag & Drop Zone -->
+          <div id="drop-zone" class="drop-zone">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <p><strong>Glissez une image ici</strong> ou cliquez pour sélectionner</p>
+            <small>JPG, PNG, WebP • Max 5MB • Format portrait recommandé (3:4)</small>
+            <input type="file" id="file-input" accept="image/*" style="display: none;">
           </div>
-          <div class="form-group">
-            <label for="new-date">Date</label>
-            <input type="date" id="new-date" required>
+
+          <div id="upload-progress" style="display: none;">
+            <div class="progress-bar-container">
+              <div id="progress-bar" style="width: 0%;"></div>
+            </div>
+            <p id="upload-status"></p>
           </div>
-          <div class="form-group">
-            <label for="new-description">Description</label>
-            <textarea id="new-description" placeholder="Description de l'événement" required></textarea>
-          </div>
-          <button type="submit" class="btn btn-success">Ajouter l'événement</button>
-        </form>
+
+          <form onsubmit="handleAddEvent(event)">
+            <div class="form-group">
+              <label for="new-image">Chemin ou URL de l'image</label>
+              <input type="text" id="new-image" placeholder="/images/event.jpg" required>
+              <small>Chemin local, URL, ou uploadez via drag & drop ci-dessus</small>
+            </div>
+            <div class="form-group">
+              <label for="new-title">Titre</label>
+              <input type="text" id="new-title" placeholder="Soirée Beach Club" required>
+            </div>
+            <div class="form-group">
+              <label for="new-date">Date</label>
+              <input type="date" id="new-date" required>
+            </div>
+            <div class="form-group">
+              <label for="new-description">Description</label>
+              <textarea id="new-description" placeholder="Description de l'événement" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Ajouter l'événement</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -449,7 +767,17 @@
       const container = document.getElementById('events-list');
 
       if (events.length === 0) {
-        container.innerHTML = '<p style="color: #666;">Aucun événement.</p>';
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <p>Aucun événement pour le moment.</p>
+          </div>
+        `;
         updateFormState();
         return;
       }
@@ -459,17 +787,15 @@
           <div class="event-card-header">
             <h3 class="event-card-title">${event.title}</h3>
             <div class="event-card-actions">
+              <button onclick="editEvent(${index})" class="btn btn-secondary btn-sm">Modifier</button>
               <button onclick="deleteEvent(${index})" class="btn btn-danger btn-sm">Supprimer</button>
             </div>
           </div>
           <div class="event-preview">
-            <img src="${event.image}" alt="${event.title}" class="event-preview-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22160%22%3E%3Crect fill=%22%23ddd%22 width=%22120%22 height=%22160%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23999%22%3EImage%3C/text%3E%3C/svg%3E'">
+            <img src="${event.image}" alt="${event.title}" class="event-preview-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22267%22%3E%3Crect fill=%22%23F3EDE3%22 width=%22200%22 height=%22267%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23B08D57%22 font-family=%22Playfair Display%22 font-size=%2216%22%3EImage%3C/text%3E%3C/svg%3E'">
             <div class="event-preview-info">
               <div class="event-date">${formatDate(event.date)}</div>
               <p class="event-description">${event.description}</p>
-              <div style="margin-top: 16px;">
-                <button onclick="editEvent(${index})" class="btn btn-secondary btn-sm">Modifier</button>
-              </div>
             </div>
           </div>
         </div>
