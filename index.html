@@ -1822,6 +1822,209 @@ html.js .reveal-right.revealed {
   }
 }
 
+/* =============================================
+   CARROUSEL EVENEMENTS
+   ============================================= */
+#evenements {
+  padding: var(--section-pad) 0;
+  background: var(--ivory);
+  overflow: hidden;
+}
+
+.evenements-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.evenements-header .eyebrow {
+  margin-bottom: 16px;
+}
+
+.carousel-wrapper {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 60px;
+}
+
+.carousel-container {
+  position: relative;
+  display: flex;
+  gap: 24px;
+  overflow: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.carousel-loading {
+  width: 100%;
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--muted);
+}
+
+.carousel-item {
+  flex: 0 0 calc(33.333% - 16px);
+  min-width: 280px;
+  aspect-ratio: 3/4;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.carousel-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 32px rgba(14, 27, 44, 0.15);
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-item-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 32px 24px;
+  background: linear-gradient(180deg, transparent 0%, rgba(14, 27, 44, 0.9) 100%);
+  color: var(--ivory);
+}
+
+.carousel-item-date {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brass);
+  margin-bottom: 8px;
+}
+
+.carousel-item-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  line-height: 1.2;
+  margin-bottom: 8px;
+  color: var(--ivory);
+}
+
+.carousel-item-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(251, 248, 243, 0.85);
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+  color: var(--ink);
+}
+
+.carousel-arrow:hover {
+  background: var(--ink);
+  color: var(--ivory);
+  border-color: var(--ink);
+}
+
+.carousel-arrow svg {
+  width: 24px;
+  height: 24px;
+}
+
+.carousel-arrow-left {
+  left: 0;
+}
+
+.carousel-arrow-right {
+  right: 0;
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.carousel-arrow:disabled:hover {
+  background: var(--ivory);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.carousel-dot.active {
+  background: var(--brass);
+  width: 24px;
+  border-radius: 4px;
+}
+
+@media (max-width: 1024px) {
+  .carousel-item {
+    flex: 0 0 calc(50% - 12px);
+  }
+}
+
+@media (max-width: 767px) {
+  .carousel-wrapper {
+    padding: 0 48px;
+  }
+
+  .carousel-item {
+    flex: 0 0 100%;
+    min-width: 240px;
+  }
+
+  .carousel-arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .carousel-arrow svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .carousel-item-overlay {
+    padding: 24px 20px;
+  }
+
+  .carousel-item-title {
+    font-size: 20px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1927,6 +2130,41 @@ html.js .reveal-right.revealed {
         <span class="chiffre-num">2008</span>
         <span class="chiffre-label">En activité depuis</span>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     CARROUSEL EVENEMENTS
+     ============================================ -->
+<section id="evenements" aria-label="Événements à venir">
+  <div class="container">
+    <div class="evenements-header">
+      <p class="eyebrow reveal-left">Événements</p>
+      <h2 class="reveal-left stagger-1">Nos prochains <em>rendez-vous</em></h2>
+    </div>
+
+    <div class="carousel-wrapper reveal-up">
+      <div class="carousel-container" id="events-carousel">
+        <!-- Les événements seront chargés dynamiquement -->
+        <div class="carousel-loading">
+          <p>Chargement des événements...</p>
+        </div>
+      </div>
+
+      <button class="carousel-arrow carousel-arrow-left" id="carousel-prev" aria-label="Événement précédent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <button class="carousel-arrow carousel-arrow-right" id="carousel-next" aria-label="Événement suivant">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="carousel-dots" id="carousel-dots"></div>
     </div>
   </div>
 </section>
@@ -3096,6 +3334,173 @@ html.js .reveal-right.revealed {
      INITIAL SUMMARY UPDATE
      ────────────────────────────────────────── */
   updateSummary();
+
+  /* ──────────────────────────────────────────
+     CARROUSEL EVENEMENTS
+     ────────────────────────────────────────── */
+  (function initCarousel() {
+    const carousel = $('#events-carousel');
+    const prevBtn = $('#carousel-prev');
+    const nextBtn = $('#carousel-next');
+    const dotsContainer = $('#carousel-dots');
+
+    let events = [];
+    let currentIndex = 0;
+    let autoplayInterval;
+
+    // Charger les événements depuis l'API
+    async function loadEvents() {
+      try {
+        const response = await fetch('/api/events');
+        const data = await response.json();
+        events = data.events || [];
+
+        if (events.length > 0) {
+          renderCarousel();
+          setupNavigation();
+          startAutoplay();
+        } else {
+          carousel.innerHTML = '<div class="carousel-loading"><p>Aucun événement à venir pour le moment.</p></div>';
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des événements:', error);
+        carousel.innerHTML = '<div class="carousel-loading"><p>Erreur lors du chargement des événements.</p></div>';
+      }
+    }
+
+    // Formater la date
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const options = { day: 'numeric', month: 'long', year: 'numeric' };
+      return date.toLocaleDateString('fr-FR', options);
+    }
+
+    // Render le carrousel
+    function renderCarousel() {
+      carousel.innerHTML = events.map((event, index) => `
+        <div class="carousel-item" data-index="${index}">
+          <img src="${event.image}" alt="${event.title}" loading="lazy">
+          <div class="carousel-item-overlay">
+            <div class="carousel-item-date">${formatDate(event.date)}</div>
+            <h3 class="carousel-item-title">${event.title}</h3>
+            <p class="carousel-item-description">${event.description}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Render les dots
+      dotsContainer.innerHTML = events.map((_, index) => `
+        <button class="carousel-dot ${index === 0 ? 'active' : ''}" data-index="${index}" aria-label="Aller à l'événement ${index + 1}"></button>
+      `).join('');
+
+      updateCarouselPosition();
+    }
+
+    // Mettre à jour la position du carrousel
+    function updateCarouselPosition() {
+      const items = carousel.querySelectorAll('.carousel-item');
+      if (items.length === 0) return;
+
+      const containerWidth = carousel.offsetWidth;
+      const itemWidth = items[0].offsetWidth;
+      const gap = 24;
+      const offset = currentIndex * (itemWidth + gap);
+
+      carousel.style.transform = `translateX(-${offset}px)`;
+
+      // Mettre à jour les dots
+      const dots = dotsContainer.querySelectorAll('.carousel-dot');
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentIndex);
+      });
+
+      // Désactiver les boutons si nécessaire
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex >= events.length - 1;
+    }
+
+    // Navigation
+    function goToSlide(index) {
+      if (index < 0 || index >= events.length) return;
+      currentIndex = index;
+      updateCarouselPosition();
+      resetAutoplay();
+    }
+
+    function setupNavigation() {
+      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+
+      // Dots navigation
+      dotsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('carousel-dot')) {
+          const index = parseInt(e.target.dataset.index);
+          goToSlide(index);
+        }
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') goToSlide(currentIndex - 1);
+        if (e.key === 'ArrowRight') goToSlide(currentIndex + 1);
+      });
+
+      // Touch swipe support
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      carousel.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+
+      carousel.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        if (touchStartX - touchEndX > 50) {
+          goToSlide(currentIndex + 1);
+        }
+        if (touchEndX - touchStartX > 50) {
+          goToSlide(currentIndex - 1);
+        }
+      }
+
+      // Update on window resize
+      window.addEventListener('resize', updateCarouselPosition);
+    }
+
+    // Autoplay
+    function startAutoplay() {
+      autoplayInterval = setInterval(() => {
+        if (currentIndex >= events.length - 1) {
+          goToSlide(0);
+        } else {
+          goToSlide(currentIndex + 1);
+        }
+      }, 5000);
+    }
+
+    function resetAutoplay() {
+      if (autoplayInterval) {
+        clearInterval(autoplayInterval);
+        startAutoplay();
+      }
+    }
+
+    // Pause autoplay when user interacts
+    carousel.addEventListener('mouseenter', () => {
+      if (autoplayInterval) clearInterval(autoplayInterval);
+    });
+
+    carousel.addEventListener('mouseleave', () => {
+      startAutoplay();
+    });
+
+    // Initialiser
+    loadEvents();
+  })();
 
 })();
 </script>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - The Governor's House</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      padding: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: #0E1B2C;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 32px;
+    }
+
+    .login-form {
+      max-width: 400px;
+      margin: 60px auto;
+    }
+
+    .admin-content {
+      display: none;
+    }
+
+    .admin-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #0E1B2C;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="date"],
+    input[type="url"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #0E1B2C;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1a2942;
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .events-list {
+      display: grid;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .event-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 24px;
+      background: #fafafa;
+    }
+
+    .event-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .event-card-title {
+      font-size: 20px;
+      font-weight: 500;
+      color: #0E1B2C;
+    }
+
+    .event-card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .event-preview {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .event-preview-img {
+      width: 120px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .event-preview-info {
+      flex: 1;
+    }
+
+    .event-date {
+      color: #B08D57;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .event-description {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .add-event-section {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 2px solid #e0e0e0;
+    }
+
+    .header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .btn-logout {
+      background: transparent;
+      color: #666;
+      border: 1px solid #ddd;
+    }
+
+    .btn-logout:hover {
+      background: #f5f5f5;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .event-preview {
+        flex-direction: column;
+      }
+
+      .event-preview-img {
+        width: 100%;
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Login Form -->
+    <div id="login-form" class="login-form">
+      <h1>Admin Panel</h1>
+      <p class="subtitle">The Governor's House</p>
+
+      <div id="login-error" class="alert alert-error" style="display: none;"></div>
+
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Se connecter</button>
+      </form>
+    </div>
+
+    <!-- Admin Content -->
+    <div id="admin-content" class="admin-content">
+      <div class="header-actions">
+        <div>
+          <h1>Gestion des Événements</h1>
+          <p class="subtitle">Modifiez les événements du carrousel</p>
+        </div>
+        <button onclick="logout()" class="btn btn-logout">Déconnexion</button>
+      </div>
+
+      <div id="alert-container"></div>
+
+      <!-- Events List -->
+      <div id="events-list" class="events-list"></div>
+
+      <!-- Add New Event -->
+      <div class="add-event-section">
+        <h2 style="margin-bottom: 24px;">Ajouter un événement</h2>
+        <form onsubmit="handleAddEvent(event)">
+          <div class="form-group">
+            <label for="new-image">URL de l'image</label>
+            <input type="url" id="new-image" placeholder="/images/event-1.jpg" required>
+          </div>
+          <div class="form-group">
+            <label for="new-title">Titre</label>
+            <input type="text" id="new-title" placeholder="Soirée Beach Club" required>
+          </div>
+          <div class="form-group">
+            <label for="new-date">Date</label>
+            <input type="date" id="new-date" required>
+          </div>
+          <div class="form-group">
+            <label for="new-description">Description</label>
+            <textarea id="new-description" placeholder="Description de l'événement" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">Ajouter l'événement</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let adminPassword = '';
+    let events = [];
+
+    // Check if already logged in
+    const savedPassword = sessionStorage.getItem('admin_password');
+    if (savedPassword) {
+      adminPassword = savedPassword;
+      showAdminPanel();
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+
+      // Test the password by trying to fetch events
+      try {
+        const response = await fetch('/api/admin/update-events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password, events: [] })
+        });
+
+        if (response.status === 401) {
+          showError('Mot de passe incorrect');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Erreur de connexion');
+        }
+
+        adminPassword = password;
+        sessionStorage.setItem('admin_password', password);
+        showAdminPanel();
+      } catch (error) {
+        showError('Erreur lors de la connexion');
+      }
+    }
+
+    function showError(message) {
+      const errorDiv = document.getElementById('login-error');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    }
+
+    async function showAdminPanel() {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('admin-content').classList.add('active');
+      await loadEvents();
+    }
+
+    function logout() {
+      sessionStorage.removeItem('admin_password');
+      location.reload();
+    }
+
+    async function loadEvents() {
+      try {
+        const response = await fetch('/api/events');
+        const data = await response.json();
+        events = data.events || [];
+        renderEvents();
+      } catch (error) {
+        showAlert('Erreur lors du chargement des événements', 'error');
+      }
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const options = { day: 'numeric', month: 'long', year: 'numeric' };
+      return date.toLocaleDateString('fr-FR', options);
+    }
+
+    function renderEvents() {
+      const container = document.getElementById('events-list');
+
+      if (events.length === 0) {
+        container.innerHTML = '<p style="color: #666;">Aucun événement.</p>';
+        return;
+      }
+
+      container.innerHTML = events.map((event, index) => `
+        <div class="event-card">
+          <div class="event-card-header">
+            <h3 class="event-card-title">${event.title}</h3>
+            <div class="event-card-actions">
+              <button onclick="deleteEvent(${index})" class="btn btn-danger btn-sm">Supprimer</button>
+            </div>
+          </div>
+          <div class="event-preview">
+            <img src="${event.image}" alt="${event.title}" class="event-preview-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22160%22%3E%3Crect fill=%22%23ddd%22 width=%22120%22 height=%22160%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23999%22%3EImage%3C/text%3E%3C/svg%3E'">
+            <div class="event-preview-info">
+              <div class="event-date">${formatDate(event.date)}</div>
+              <p class="event-description">${event.description}</p>
+              <div style="margin-top: 16px;">
+                <button onclick="editEvent(${index})" class="btn btn-secondary btn-sm">Modifier</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function editEvent(index) {
+      const event = events[index];
+      const newImage = prompt('URL de l\'image:', event.image);
+      if (newImage === null) return;
+
+      const newTitle = prompt('Titre:', event.title);
+      if (newTitle === null) return;
+
+      const newDate = prompt('Date (YYYY-MM-DD):', event.date);
+      if (newDate === null) return;
+
+      const newDescription = prompt('Description:', event.description);
+      if (newDescription === null) return;
+
+      events[index] = {
+        id: event.id,
+        image: newImage,
+        title: newTitle,
+        date: newDate,
+        description: newDescription
+      };
+
+      saveEvents();
+    }
+
+    function deleteEvent(index) {
+      if (!confirm('Voulez-vous vraiment supprimer cet événement ?')) return;
+      events.splice(index, 1);
+      saveEvents();
+    }
+
+    async function handleAddEvent(e) {
+      e.preventDefault();
+
+      const newEvent = {
+        id: Date.now(),
+        image: document.getElementById('new-image').value,
+        title: document.getElementById('new-title').value,
+        date: document.getElementById('new-date').value,
+        description: document.getElementById('new-description').value
+      };
+
+      events.push(newEvent);
+
+      await saveEvents();
+
+      // Reset form
+      e.target.reset();
+    }
+
+    async function saveEvents() {
+      try {
+        const response = await fetch('/api/admin/update-events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            password: adminPassword,
+            events: events
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la sauvegarde');
+        }
+
+        showAlert('Événements mis à jour avec succès !', 'success');
+        renderEvents();
+      } catch (error) {
+        showAlert('Erreur lors de la sauvegarde: ' + error.message, 'error');
+      }
+    }
+
+    function showAlert(message, type) {
+      const container = document.getElementById('alert-container');
+      const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+
+      container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
