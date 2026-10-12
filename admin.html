@@ -321,6 +321,11 @@
       <div class="add-event-section">
         <h2 style="margin-bottom: 24px;">Ajouter un événement</h2>
 
+        <!-- Limit Message -->
+        <div id="limit-message" class="alert alert-error" style="display: none; margin-bottom: 24px;">
+          <strong>Limite atteinte :</strong> Vous avez atteint la limite de 4 événements. Supprimez un événement existant pour en ajouter un nouveau.
+        </div>
+
         <!-- Drag & Drop Zone -->
         <div id="drop-zone" class="drop-zone">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -445,6 +450,7 @@
 
       if (events.length === 0) {
         container.innerHTML = '<p style="color: #666;">Aucun événement.</p>';
+        updateFormState();
         return;
       }
 
@@ -468,6 +474,41 @@
           </div>
         </div>
       `).join('');
+
+      updateFormState();
+    }
+
+    function updateFormState() {
+      const addForm = document.querySelector('.add-event-section form');
+      const addButton = addForm?.querySelector('button[type="submit"]');
+      const limitMessage = document.getElementById('limit-message');
+      const dropZone = document.getElementById('drop-zone');
+
+      if (events.length >= 4) {
+        // Désactiver le formulaire
+        if (addForm) {
+          const inputs = addForm.querySelectorAll('input, textarea');
+          inputs.forEach(input => input.disabled = true);
+        }
+        if (addButton) addButton.disabled = true;
+        if (limitMessage) limitMessage.style.display = 'block';
+        if (dropZone) {
+          dropZone.style.opacity = '0.5';
+          dropZone.style.pointerEvents = 'none';
+        }
+      } else {
+        // Activer le formulaire
+        if (addForm) {
+          const inputs = addForm.querySelectorAll('input, textarea');
+          inputs.forEach(input => input.disabled = false);
+        }
+        if (addButton) addButton.disabled = false;
+        if (limitMessage) limitMessage.style.display = 'none';
+        if (dropZone) {
+          dropZone.style.opacity = '1';
+          dropZone.style.pointerEvents = 'auto';
+        }
+      }
     }
 
     function editEvent(index) {
@@ -503,6 +544,12 @@
 
     async function handleAddEvent(e) {
       e.preventDefault();
+
+      // Vérifier le nombre maximum d'événements
+      if (events.length >= 4) {
+        showAlert('Limite atteinte : vous ne pouvez pas ajouter plus de 4 événements. Supprimez un événement existant pour en ajouter un nouveau.', 'error');
+        return;
+      }
 
       const newEvent = {
         id: Date.now(),
