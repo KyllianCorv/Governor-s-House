@@ -2287,37 +2287,6 @@ html.js .reveal-right.revealed {
 <!-- ============================================
      CARROUSEL EVENEMENTS
      ============================================ -->
-<section id="evenements" aria-label="Événements à venir">
-  <div class="container">
-    <div class="evenements-header">
-      <p class="eyebrow reveal-left">Événements</p>
-      <h2 class="reveal-left stagger-1">Nos prochains <em>rendez-vous</em></h2>
-    </div>
-
-    <div class="carousel-wrapper reveal-up">
-      <div class="carousel-container" id="events-carousel">
-        <!-- Les événements seront chargés dynamiquement -->
-        <div class="carousel-loading">
-          <p>Chargement des événements...</p>
-        </div>
-      </div>
-
-      <button class="carousel-arrow carousel-arrow-left" id="carousel-prev" aria-label="Événement précédent">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
-
-      <button class="carousel-arrow carousel-arrow-right" id="carousel-next" aria-label="Événement suivant">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </button>
-
-      <div class="carousel-dots" id="carousel-dots"></div>
-    </div>
-  </div>
-</section>
 
 <!-- ============================================
      3. L'ILE
@@ -2632,7 +2601,37 @@ html.js .reveal-right.revealed {
     </div>
   </div>
 </section>
+<section id="evenements" aria-label="Événements à venir">
+  <div class="container">
+    <div class="evenements-header">
+      <p class="eyebrow reveal-left">Événements</p>
+      <h2 class="reveal-left stagger-1">Nos prochains <em>rendez-vous</em></h2>
+    </div>
 
+    <div class="carousel-wrapper reveal-up">
+      <div class="carousel-container" id="events-carousel">
+        <!-- Les événements seront chargés dynamiquement -->
+        <div class="carousel-loading">
+          <p>Chargement des événements...</p>
+        </div>
+      </div>
+
+      <button class="carousel-arrow carousel-arrow-left" id="carousel-prev" aria-label="Événement précédent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <button class="carousel-arrow carousel-arrow-right" id="carousel-next" aria-label="Événement suivant">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="carousel-dots" id="carousel-dots"></div>
+    </div>
+  </div>
+</section>
 <!-- ============================================
      11. GALERIE
      ============================================ -->
@@ -2712,6 +2711,7 @@ html.js .reveal-right.revealed {
   </button>
   <p class="lb-counter" id="lb-counter" aria-live="polite"></p>
 </div>
+
 
 <!-- ============================================
      12. FAQ
