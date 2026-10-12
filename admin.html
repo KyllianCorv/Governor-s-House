@@ -231,6 +231,43 @@
       background: #f5f5f5;
     }
 
+    .drop-zone {
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 24px;
+      background: #fafafa;
+    }
+
+    .drop-zone:hover {
+      border-color: #0E1B2C;
+      background: #f5f5f5;
+    }
+
+    .drop-zone.dragging {
+      border-color: #0E1B2C;
+      background: #e8f4f8;
+      border-style: solid;
+    }
+
+    .drop-zone svg {
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .drop-zone p {
+      margin: 8px 0;
+      color: #333;
+    }
+
+    .drop-zone small {
+      color: #999;
+      font-size: 12px;
+    }
+
     @media (max-width: 768px) {
       .container {
         padding: 20px;
@@ -283,12 +320,32 @@
       <!-- Add New Event -->
       <div class="add-event-section">
         <h2 style="margin-bottom: 24px;">Ajouter un événement</h2>
+
+        <!-- Drag & Drop Zone -->
+        <div id="drop-zone" class="drop-zone">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <p><strong>Glissez une image ici</strong> ou cliquez pour sélectionner</p>
+          <small>JPG, PNG, WebP • Max 5MB • Format portrait recommandé (3:4)</small>
+          <input type="file" id="file-input" accept="image/*" style="display: none;">
+        </div>
+
+        <div id="upload-progress" style="display: none; margin: 16px 0;">
+          <div style="background: #e0e0e0; border-radius: 4px; overflow: hidden;">
+            <div id="progress-bar" style="height: 4px; background: #0E1B2C; width: 0%; transition: width 0.3s;"></div>
+          </div>
+          <p id="upload-status" style="font-size: 14px; color: #666; margin-top: 8px;"></p>
+        </div>
+
         <form onsubmit="handleAddEvent(event)">
           <div class="form-group">
             <label for="new-image">Chemin ou URL de l'image</label>
             <input type="text" id="new-image" placeholder="/images/IMG_4988.jpeg" required>
             <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
-              Exemples: /images/mon-image.jpg ou https://i.ibb.co/xxx/image.jpg
+              Chemin local, URL, ou uploadez via drag & drop ci-dessus
             </small>
           </div>
           <div class="form-group">
@@ -494,6 +551,124 @@
       setTimeout(() => {
         container.innerHTML = '';
       }, 5000);
+    }
+
+    // Drag & Drop functionality
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const imageInput = document.getElementById('new-image');
+    const uploadProgress = document.getElementById('upload-progress');
+    const progressBar = document.getElementById('progress-bar');
+    const uploadStatus = document.getElementById('upload-status');
+
+    // Click to select file
+    dropZone.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // Drag & drop events
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.classList.add('dragging');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.classList.remove('dragging');
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', handleDrop, false);
+    fileInput.addEventListener('change', handleFileSelect, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFiles(files);
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      handleFiles(files);
+    }
+
+    async function handleFiles(files) {
+      if (files.length === 0) return;
+
+      const file = files[0];
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showAlert('Veuillez sélectionner une image (JPG, PNG, WebP)', 'error');
+        return;
+      }
+
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        showAlert('L\'image ne doit pas dépasser 5MB', 'error');
+        return;
+      }
+
+      // Show progress
+      uploadProgress.style.display = 'block';
+      progressBar.style.width = '30%';
+      uploadStatus.textContent = 'Upload en cours...';
+
+      try {
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const base64 = e.target.result;
+          progressBar.style.width = '60%';
+
+          // Upload to Vercel Blob
+          const response = await fetch('/api/admin/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              password: adminPassword,
+              image: base64,
+              filename: file.name
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error('Erreur lors de l\'upload');
+          }
+
+          const data = await response.json();
+          progressBar.style.width = '100%';
+          uploadStatus.textContent = 'Upload réussi!';
+
+          // Set the image URL in the input
+          imageInput.value = data.url;
+
+          // Hide progress after 2s
+          setTimeout(() => {
+            uploadProgress.style.display = 'none';
+            progressBar.style.width = '0%';
+          }, 2000);
+
+          showAlert('Image uploadée avec succès!', 'success');
+        };
+
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Upload error:', error);
+        uploadProgress.style.display = 'none';
+        progressBar.style.width = '0%';
+        showAlert('Erreur lors de l\'upload: ' + error.message, 'error');
+      }
     }
   </script>
 </body>
