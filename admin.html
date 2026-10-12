@@ -285,8 +285,11 @@
         <h2 style="margin-bottom: 24px;">Ajouter un événement</h2>
         <form onsubmit="handleAddEvent(event)">
           <div class="form-group">
-            <label for="new-image">URL de l'image</label>
-            <input type="url" id="new-image" placeholder="/images/event-1.jpg" required>
+            <label for="new-image">Chemin ou URL de l'image</label>
+            <input type="text" id="new-image" placeholder="/images/IMG_4988.jpeg" required>
+            <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+              Exemples: /images/mon-image.jpg ou https://i.ibb.co/xxx/image.jpg
+            </small>
           </div>
           <div class="form-group">
             <label for="new-title">Titre</label>
