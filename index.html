@@ -1851,10 +1851,10 @@ html.js .reveal-right.revealed {
   position: relative;
   display: flex;
   gap: 24px;
-  justify-content: center;
+  overflow: hidden;
+  justify-content: flex-start;
   align-items: center;
-  transform: none !important;
-  transition: none !important;
+  transition: transform 0.5s ease;
 }
 
 .carousel-loading {
@@ -3384,134 +3384,83 @@ html.js .reveal-right.revealed {
       return date.toLocaleDateString('fr-FR', options);
     }
 
-    // Render le carrousel (3 cartes fixes)
+    // Render le carrousel (toutes les cartes)
     function renderCarousel() {
-      // FORCER le conteneur à ne PAS bouger
-      carousel.style.transform = 'none';
-      carousel.style.transition = 'none';
-
-      // Créer 3 cartes fixes
-      carousel.innerHTML = `
-        <div class="carousel-item" id="card-0"></div>
-        <div class="carousel-item" id="card-1"></div>
-        <div class="carousel-item" id="card-2"></div>
-      `;
-
-      // Calculer le nombre de pages
-      const totalPages = Math.ceil(events.length / 3);
-
-      // Render les dots (un par page)
-      dotsContainer.innerHTML = Array.from({length: totalPages}, (_, index) => `
-        <button class="carousel-dot ${index === 0 ? 'active' : ''}" data-page="${index}" aria-label="Page ${index + 1}"></button>
+      // Créer TOUTES les cartes
+      carousel.innerHTML = events.map((event, index) => `
+        <div class="carousel-item" data-index="${index}">
+          <img src="${event.image}" alt="${event.title}" loading="lazy">
+          <div class="carousel-item-overlay">
+            <div class="carousel-item-date">${formatDate(event.date)}</div>
+            <h3 class="carousel-item-title">${event.title}</h3>
+            <p class="carousel-item-description">${event.description}</p>
+          </div>
+        </div>
       `).join('');
 
-      updateCarouselContent();
+      // Render les dots (un par événement)
+      dotsContainer.innerHTML = events.map((_, index) => `
+        <button class="carousel-dot ${index === 0 ? 'active' : ''}" data-index="${index}" aria-label="Aller à l'événement ${index + 1}"></button>
+      `).join('');
+
+      updateCarouselPosition();
     }
 
-    // Mettre à jour le contenu des cartes
-    function updateCarouselContent() {
-      // FORCER le conteneur à ne PAS bouger
-      carousel.style.transform = 'none';
-      carousel.style.transition = 'none';
+    // Mettre à jour la position du carrousel
+    function updateCarouselPosition() {
+      const items = carousel.querySelectorAll('.carousel-item');
+      if (items.length === 0) return;
 
-      const card0 = document.getElementById('card-0');
-      const card1 = document.getElementById('card-1');
-      const card2 = document.getElementById('card-2');
+      const itemWidth = items[0].offsetWidth;
+      const gap = 24;
 
-      if (!card0 || !card1 || !card2) return;
-
-      const totalPages = Math.ceil(events.length / 3);
-      const currentPage = Math.floor(currentIndex / 3);
-
-      // Calculer les indices des événements à afficher
-      const startIndex = currentPage * 3;
-      const eventsToShow = [
-        events[startIndex],
-        events[startIndex + 1],
-        events[startIndex + 2]
-      ];
-
-      // Fonction pour rendre une carte
-      const renderCard = (card, event) => {
-        if (event) {
-          card.style.opacity = '0';
-          setTimeout(() => {
-            card.innerHTML = `
-              <img src="${event.image}" alt="${event.title}" loading="lazy">
-              <div class="carousel-item-overlay">
-                <div class="carousel-item-date">${formatDate(event.date)}</div>
-                <h3 class="carousel-item-title">${event.title}</h3>
-                <p class="carousel-item-description">${event.description}</p>
-              </div>
-            `;
-            card.style.display = 'block';
-            setTimeout(() => card.style.opacity = '1', 50);
-          }, 300);
-        } else {
-          card.style.opacity = '0';
-          setTimeout(() => {
-            card.style.display = 'none';
-          }, 300);
-        }
-      };
-
-      // Mettre à jour chaque carte
-      renderCard(card0, eventsToShow[0]);
-      renderCard(card1, eventsToShow[1]);
-      renderCard(card2, eventsToShow[2]);
+      // Calculer le décalage pour centrer 3 cartes
+      const offset = currentIndex * (itemWidth + gap);
+      carousel.style.transform = `translateX(-${offset}px)`;
 
       // Mettre à jour les dots
       const dots = dotsContainer.querySelectorAll('.carousel-dot');
       dots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentPage);
+        dot.classList.toggle('active', index === currentIndex);
       });
 
-      // Désactiver les boutons si nécessaire
-      prevBtn.disabled = currentPage === 0;
-      nextBtn.disabled = currentPage >= totalPages - 1;
+      // Boutons toujours actifs (défilement circulaire)
+      prevBtn.disabled = false;
+      nextBtn.disabled = false;
     }
 
-    // Navigation
-    function goToPage(pageIndex) {
-      const totalPages = Math.ceil(events.length / 3);
-
-      if (pageIndex < 0) {
+    // Navigation (1 carte à la fois)
+    function goToSlide(index) {
+      // Défilement circulaire
+      if (index < 0) {
+        currentIndex = events.length - 1;
+      } else if (index >= events.length) {
         currentIndex = 0;
-      } else if (pageIndex >= totalPages) {
-        currentIndex = 0; // Retour au début
       } else {
-        currentIndex = pageIndex * 3;
+        currentIndex = index;
       }
 
-      updateCarouselContent();
+      updateCarouselPosition();
       resetAutoplay();
     }
 
     function setupNavigation() {
-      // Navigation par page
-      prevBtn.addEventListener('click', () => {
-        const currentPage = Math.floor(currentIndex / 3);
-        goToPage(currentPage - 1);
-      });
-
-      nextBtn.addEventListener('click', () => {
-        const currentPage = Math.floor(currentIndex / 3);
-        goToPage(currentPage + 1);
-      });
+      // Navigation 1 carte à la fois
+      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
 
       // Dots navigation
       dotsContainer.addEventListener('click', (e) => {
         if (e.target.classList.contains('carousel-dot')) {
-          const pageIndex = parseInt(e.target.dataset.page);
-          goToPage(pageIndex);
+          const index = parseInt(e.target.dataset.index);
+          goToSlide(index);
         }
       });
 
       // Keyboard navigation
       document.addEventListener('keydown', (e) => {
-        const currentPage = Math.floor(currentIndex / 3);
-        if (e.key === 'ArrowLeft') goToPage(currentPage - 1);
-        if (e.key === 'ArrowRight') goToPage(currentPage + 1);
+        if (e.key === 'ArrowLeft') goToSlide(currentIndex - 1);
+        if (e.key === 'ArrowRight') goToSlide(currentIndex + 1);
       });
 
       // Touch swipe support
@@ -3528,21 +3477,22 @@ html.js .reveal-right.revealed {
       });
 
       function handleSwipe() {
-        const currentPage = Math.floor(currentIndex / 3);
         if (touchStartX - touchEndX > 50) {
-          goToPage(currentPage + 1);
+          goToSlide(currentIndex + 1);
         }
         if (touchEndX - touchStartX > 50) {
-          goToPage(currentPage - 1);
+          goToSlide(currentIndex - 1);
         }
       }
+
+      // Update on window resize
+      window.addEventListener('resize', updateCarouselPosition);
     }
 
-    // Autoplay
+    // Autoplay (1 carte toutes les 5s)
     function startAutoplay() {
       autoplayInterval = setInterval(() => {
-        const currentPage = Math.floor(currentIndex / 3);
-        goToPage(currentPage + 1);
+        goToSlide(currentIndex + 1);
       }, 5000);
     }
 
