@@ -4064,18 +4064,35 @@ html.js .reveal-right.revealed {
         // Plusieurs formules : afficher le sélecteur
         formulesContainer.style.display = 'block';
 
-        var formuleNames = {
-          'gouverneur': 'Le Déjeuner du Gouverneur',
-          'beachclub': 'Flat Island Beach Club',
-          'sable': 'Flat Island Beach Menu'
+        var formuleDetails = {
+          'gouverneur': {
+            name: 'Le Déjeuner du Gouverneur',
+            price: '200 €/pers.',
+            traversee: ''
+          },
+          'beachclub': {
+            name: 'Flat Island Beach Club',
+            price: '130 €/pers.',
+            traversee: 'avec traversée'
+          },
+          'sable': {
+            name: 'Flat Island Beach Menu',
+            price: '100 €/pers.',
+            traversee: 'hors traversée'
+          }
         };
 
         formulesList.innerHTML = event.formules.map(function(formuleId, index) {
           var checked = index === 0 ? 'checked' : '';
+          var details = formuleDetails[formuleId] || { name: formuleId, price: '', traversee: '' };
+          var fullText = details.name + ' — ' + details.price;
+          if (details.traversee) {
+            fullText += ' (' + details.traversee + ')';
+          }
           return '<div class="formule-option">' +
             '<label>' +
             '<input type="radio" name="event-formule" value="' + formuleId + '" ' + checked + '>' +
-            '<span class="formule-label-text">' + (formuleNames[formuleId] || formuleId) + '</span>' +
+            '<span class="formule-label-text">' + fullText + '</span>' +
             '</label>' +
             '</div>';
         }).join('');
