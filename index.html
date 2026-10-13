@@ -488,19 +488,47 @@ html.js .reveal-right.revealed {
 }
 
 /* Lang switch */
-.nav-lang {
+.lang-switcher {
+  margin: 0;
+}
+
+.lang-btn {
   font-family: 'Jost', sans-serif;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--ivory);
-  opacity: .7;
+  background: none;
+  border: none;
   cursor: pointer;
   transition: opacity .3s, color .4s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
-.nav-lang:hover { opacity: 1; }
-#nav.scrolled .nav-lang { color: var(--ink); }
+
+.lang-current {
+  opacity: 1;
+}
+
+.lang-divider {
+  opacity: 0.5;
+}
+
+.lang-other {
+  opacity: 0.4;
+  transition: opacity .3s;
+}
+
+.lang-btn:hover .lang-other {
+  opacity: 0.8;
+}
+
+#nav.scrolled .lang-btn {
+  color: var(--ink);
+}
 
 /* Burger */
 .nav-burger {
@@ -608,7 +636,7 @@ html.js .reveal-right.revealed {
 @media (max-width:991px) {
   .nav-links { display: none; }
   .nav-burger { display: flex; }
-  .nav-lang { display: none; }
+  .lang-switcher { display: none; }
   /* CTA compact beside burger */
   .nav-cta.desktop-only {
     display: inline-flex !important;
@@ -2600,17 +2628,23 @@ html.js .reveal-right.revealed {
   <div class="nav-inner">
     <a href="#" class="nav-logo" aria-label="Governor's House - Accueil">The Governor's House</a>
     <ul class="nav-links" role="list">
-      <li><a href="#ile" data-nav="ile">L'île</a></li>
-      <li><a href="#formules" data-nav="formules">Formules</a></li>
-      <li><a href="#journee" data-nav="journee">La journée</a></li>
-      <li><a href="#options" data-nav="options">Options</a></li>
-      <li><a href="#privatisation" data-nav="privatisation">Privatisation</a></li>
-      <li><a href="#galerie" data-nav="galerie">Galerie</a></li>
-      <li><a href="#faq" data-nav="faq">FAQ</a></li>
+      <li><a href="#ile" data-nav="ile" data-i18n="nav.ile">L'île</a></li>
+      <li><a href="#formules" data-nav="formules" data-i18n="nav.formules">Formules</a></li>
+      <li><a href="#journee" data-nav="journee" data-i18n="nav.journee">La journée</a></li>
+      <li><a href="#options" data-nav="options" data-i18n="nav.options">Options</a></li>
+      <li><a href="#privatisation" data-nav="privatisation" data-i18n="nav.privatisation">Privatisation</a></li>
+      <li><a href="#galerie" data-nav="galerie" data-i18n="nav.galerie">Galerie</a></li>
+      <li><a href="#faq" data-nav="faq" data-i18n="nav.faq">FAQ</a></li>
     </ul>
     <div class="nav-right">
-      <span class="nav-lang" data-i18n-switch role="button" tabindex="0" aria-label="Switch to English">EN</span>
-      <a href="#reserver" class="btn-primary nav-cta desktop-only">Réserver</a>
+      <div class="lang-switcher">
+        <button id="lang-btn" class="lang-btn" data-lang="fr" aria-label="Changer de langue">
+          <span class="lang-current">FR</span>
+          <span class="lang-divider">/</span>
+          <span class="lang-other">EN</span>
+        </button>
+      </div>
+      <a href="#reserver" class="btn-primary nav-cta desktop-only" data-i18n="nav.cta">Réserver</a>
       <button class="nav-burger" id="burger-btn" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobile-nav">
         <span></span><span></span><span></span>
       </button>
@@ -3476,6 +3510,90 @@ html.js .reveal-right.revealed {
   /* ── Helpers ── */
   var $ = function(sel, ctx) { return (ctx || document).querySelector(sel); };
   var $$ = function(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); };
+
+  /* ──────────────────────────────────────────
+     I18N - Internationalisation
+     ────────────────────────────────────────── */
+  var translations = {
+    fr: {
+      nav: {
+        ile: "L'île",
+        formules: "Formules",
+        journee: "La journée",
+        options: "Options",
+        privatisation: "Privatisation",
+        galerie: "Galerie",
+        faq: "FAQ",
+        cta: "Réserver"
+      }
+    },
+    en: {
+      nav: {
+        ile: "The Island",
+        formules: "Packages",
+        journee: "The Day",
+        options: "Options",
+        privatisation: "Private Events",
+        galerie: "Gallery",
+        faq: "FAQ",
+        cta: "Book Now"
+      }
+    }
+  };
+
+  var currentLang = localStorage.getItem('lang') || 'fr';
+
+  function t(key) {
+    var keys = key.split('.');
+    var value = translations[currentLang];
+    for (var i = 0; i < keys.length; i++) {
+      value = value[keys[i]];
+      if (!value) return key;
+    }
+    return value;
+  }
+
+  function applyTranslations() {
+    $$('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      el.textContent = t(key);
+    });
+
+    // Update lang button
+    var langBtn = $('#lang-btn');
+    if (langBtn) {
+      var langCurrent = $('.lang-current', langBtn);
+      var langOther = $('.lang-other', langBtn);
+      if (currentLang === 'fr') {
+        if (langCurrent) langCurrent.textContent = 'FR';
+        if (langOther) langOther.textContent = 'EN';
+        langBtn.setAttribute('data-lang', 'fr');
+        langBtn.setAttribute('aria-label', 'Changer de langue');
+      } else {
+        if (langCurrent) langCurrent.textContent = 'EN';
+        if (langOther) langOther.textContent = 'FR';
+        langBtn.setAttribute('data-lang', 'en');
+        langBtn.setAttribute('aria-label', 'Change language');
+      }
+    }
+  }
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    applyTranslations();
+  }
+
+  // Init language on page load
+  applyTranslations();
+
+  // Lang switcher click
+  var langBtn = $('#lang-btn');
+  if (langBtn) {
+    langBtn.addEventListener('click', function() {
+      setLanguage(currentLang === 'fr' ? 'en' : 'fr');
+    });
+  }
 
   /* ──────────────────────────────────────────
      NAVIGATION - Scroll state
