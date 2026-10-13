@@ -23,8 +23,8 @@ export default async function handler(req, res) {
       options = [
         {
           id: 'opt_transfert',
-          label: 'Transfert hôtel',
-          description: 'Service de transfert depuis votre hôtel',
+          label: 'Transfert',
+          description: 'Prise en charge depuis votre hôtel jusqu\'au Sunset Café, Grand Baie, avec retour en fin de journée',
           price: 0,
           priceLabel: 'sur demande',
           enabled: true,
@@ -33,25 +33,7 @@ export default async function handler(req, res) {
         {
           id: 'opt_speedboat',
           label: 'Speedboat privé',
-          description: 'Traversée en speedboat privatif',
-          price: 0,
-          priceLabel: 'sur devis',
-          enabled: true,
-          locked: false
-        },
-        {
-          id: 'opt_chef',
-          label: 'Cuisinier privé',
-          description: 'Chef cuisinier dédié pour votre groupe',
-          price: 0,
-          priceLabel: 'sur demande',
-          enabled: true,
-          locked: false
-        },
-        {
-          id: 'opt_boissons',
-          label: 'Carte des vins et cocktails',
-          description: 'Sélection premium de vins et cocktails',
+          description: 'Traversée exclusive, rien que pour vous — entre récifs et eaux cristallines du lagon',
           price: 0,
           priceLabel: 'sur demande',
           enabled: true,
@@ -60,36 +42,18 @@ export default async function handler(req, res) {
         {
           id: 'opt_champagne',
           label: 'Champagne',
-          description: 'Bouteille de champagne',
+          description: 'Une bouteille servie à l\'arrivée ou au coucher du soleil sur la terrasse, selon votre humeur',
           price: 0,
           priceLabel: 'sur demande',
           enabled: true,
           locked: false
-        },
-        {
-          id: 'opt_snorkeling',
-          label: 'Snorkeling',
-          description: 'Masques et tubas fournis',
-          price: 0,
-          priceLabel: 'inclus',
-          enabled: true,
-          locked: true
         },
         {
           id: 'opt_photo',
           label: 'Photographe',
-          description: 'Photographe professionnel pour la journée',
+          description: 'Un photographe discret pour immortaliser la journée sans que vous ayez à y penser',
           price: 0,
-          priceLabel: 'sur demande',
-          enabled: true,
-          locked: false
-        },
-        {
-          id: 'opt_massage',
-          label: 'Massage',
-          description: 'Massage bien-être sur la plage',
-          price: 0,
-          priceLabel: 'sur demande',
+          priceLabel: 'à confirmer',
           enabled: true,
           locked: false
         }

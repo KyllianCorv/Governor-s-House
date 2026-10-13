@@ -789,11 +789,15 @@
               <div style="display: flex; flex-direction: column; gap: 8px;">
                 <label style="display: flex; align-items: center; gap: 8px;">
                   <input type="checkbox" id="formule-gouverneur" value="gouverneur" checked>
-                  <span>Le Déjeuner du Gouverneur</span>
+                  <span>Le Déjeuner du Gouverneur - 200€/pers</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px;">
+                  <input type="checkbox" id="formule-beachclub" value="beachclub">
+                  <span>Flat Island Beach Club - 130€/pers</span>
                 </label>
                 <label style="display: flex; align-items: center; gap: 8px;">
                   <input type="checkbox" id="formule-sable" value="sable">
-                  <span>Flat Island Beach Menu</span>
+                  <span>Flat Island Beach Menu - 100€/pers (hors traversée)</span>
                 </label>
               </div>
               <small>Sélectionnez une ou plusieurs formules pour cet événement</small>
@@ -925,14 +929,16 @@
 
         const formuleNames = {
           'gouverneur': 'Gouverneur',
+          'beachclub': 'Beach Club',
           'sable': 'Beach Menu'
         };
         const formulesText = (event.formules || ['gouverneur']).map(f => formuleNames[f] || f).join(', ');
 
         const optionLabels = {
-          'opt_transfert': 'Transfert', 'opt_speedboat': 'Speedboat', 'opt_chef': 'Chef',
-          'opt_boissons': 'Vins', 'opt_champagne': 'Champagne', 'opt_snorkeling': 'Snorkeling',
-          'opt_photo': 'Photo', 'opt_massage': 'Massage'
+          'opt_transfert': 'Transfert',
+          'opt_speedboat': 'Speedboat',
+          'opt_champagne': 'Champagne',
+          'opt_photo': 'Photographe'
         };
 
         const preselectedText = (event.preselectedOptions || []).map(o => optionLabels[o] || o).join(', ') || 'Aucune';
@@ -1022,13 +1028,13 @@
 
       // Pour les formules, on demande sous forme de texte
       const currentFormules = (event.formules || ['gouverneur']).join(', ');
-      const formulesInput = prompt('Formules (séparées par virgule : gouverneur, sable):', currentFormules);
+      const formulesInput = prompt('Formules (séparées par virgule : gouverneur, beachclub, sable):', currentFormules);
       if (formulesInput === null) return;
       const newFormules = formulesInput.split(',').map(f => f.trim()).filter(f => f);
 
       // Pour les options, on demande les IDs
       const currentPreselected = (event.preselectedOptions || []).join(', ');
-      const preselectedInput = prompt('Options pré-sélectionnées (IDs séparés par virgule, ex: opt_snorkeling, opt_boissons):', currentPreselected);
+      const preselectedInput = prompt('Options pré-sélectionnées (IDs séparés par virgule, ex: opt_transfert, opt_champagne):', currentPreselected);
       const newPreselected = preselectedInput ? preselectedInput.split(',').map(o => o.trim()).filter(o => o) : [];
 
       const currentLocked = (event.lockedOptions || []).join(', ');
@@ -1068,6 +1074,7 @@
       // Collect selected formules
       const formules = [];
       if (document.getElementById('formule-gouverneur').checked) formules.push('gouverneur');
+      if (document.getElementById('formule-beachclub').checked) formules.push('beachclub');
       if (document.getElementById('formule-sable').checked) formules.push('sable');
 
       if (formules.length === 0) {
@@ -1309,14 +1316,10 @@
         } else {
           // Fallback: use default options
           reservationOptions = [
-            { id: 'opt_transfert', label: 'Transfert hôtel', description: 'Service de transfert depuis votre hôtel', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
-            { id: 'opt_speedboat', label: 'Speedboat privé', description: 'Traversée en speedboat privatif', price: 0, priceLabel: 'sur devis', enabled: true, locked: false },
-            { id: 'opt_chef', label: 'Cuisinier privé', description: 'Chef cuisinier dédié pour votre groupe', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
-            { id: 'opt_boissons', label: 'Carte des vins et cocktails', description: 'Sélection premium de vins et cocktails', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
-            { id: 'opt_champagne', label: 'Champagne', description: 'Bouteille de champagne', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
-            { id: 'opt_snorkeling', label: 'Snorkeling', description: 'Masques et tubas fournis', price: 0, priceLabel: 'inclus', enabled: true, locked: true },
-            { id: 'opt_photo', label: 'Photographe', description: 'Photographe professionnel pour la journée', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
-            { id: 'opt_massage', label: 'Massage', description: 'Massage bien-être sur la plage', price: 0, priceLabel: 'sur demande', enabled: true, locked: false }
+            { id: 'opt_transfert', label: 'Transfert', description: 'Prise en charge depuis votre hôtel jusqu\'au Sunset Café', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
+            { id: 'opt_speedboat', label: 'Speedboat privé', description: 'Traversée exclusive, rien que pour vous', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
+            { id: 'opt_champagne', label: 'Champagne', description: 'Bouteille servie', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
+            { id: 'opt_photo', label: 'Photographe', description: 'Photographe discret pour immortaliser la journée', price: 0, priceLabel: 'à confirmer', enabled: true, locked: false }
           ];
         }
 
@@ -1400,14 +1403,10 @@
       if (!container) return;
 
       const availableOptions = [
-        { id: 'opt_transfert', label: 'Transfert hôtel' },
-        { id: 'opt_speedboat', label: 'Speedboat privé' },
-        { id: 'opt_chef', label: 'Cuisinier privé' },
-        { id: 'opt_boissons', label: 'Carte des vins et cocktails' },
-        { id: 'opt_champagne', label: 'Champagne' },
-        { id: 'opt_snorkeling', label: 'Snorkeling' },
-        { id: 'opt_photo', label: 'Photographe' },
-        { id: 'opt_massage', label: 'Massage' }
+        { id: 'opt_transfert', label: 'Transfert - Prise en charge depuis votre hôtel' },
+        { id: 'opt_speedboat', label: 'Speedboat privé - Traversée exclusive' },
+        { id: 'opt_champagne', label: 'Champagne - Bouteille servie' },
+        { id: 'opt_photo', label: 'Photographe - à confirmer' }
       ];
 
       container.innerHTML = availableOptions.map(opt => `

@@ -27,10 +27,10 @@ export default async function handler(req, res) {
           title: 'Soirée Beach Club',
           date: '2026-11-15',
           description: 'DJ set sur la plage au coucher du soleil',
-          formules: ['sable'], // Formules disponibles pour cet événement
-          reservationDate: '2026-11-15', // Date de réservation (peut être différente de date)
-          preselectedOptions: ['opt_snorkeling'], // Options pré-cochées
-          lockedOptions: ['opt_snorkeling'] // Options bloquées (non modifiables)
+          formules: ['beachclub'], // Formule Beach Club avec traversée
+          reservationDate: '2026-11-15',
+          preselectedOptions: [], // Options pré-cochées
+          lockedOptions: [] // Options bloquées (non modifiables)
         },
         {
           id: 2,
@@ -40,8 +40,8 @@ export default async function handler(req, res) {
           description: 'Découvrez notre menu gastronomique',
           formules: ['gouverneur'],
           reservationDate: '2026-11-20',
-          preselectedOptions: ['opt_snorkeling', 'opt_boissons'],
-          lockedOptions: ['opt_snorkeling']
+          preselectedOptions: ['opt_champagne'],
+          lockedOptions: ['opt_champagne']
         },
         {
           id: 3,
@@ -49,9 +49,9 @@ export default async function handler(req, res) {
           title: 'Privatisation Disponible',
           date: '2026-12-01',
           description: 'L\'île entière pour votre événement',
-          formules: ['gouverneur', 'sable'], // Plusieurs formules disponibles
+          formules: ['gouverneur', 'beachclub', 'sable'], // Plusieurs formules disponibles
           reservationDate: '2026-12-01',
-          preselectedOptions: ['opt_snorkeling'],
+          preselectedOptions: [],
           lockedOptions: []
         }
       ];
