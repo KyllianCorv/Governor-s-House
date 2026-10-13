@@ -2615,6 +2615,9 @@ html.js .reveal-right.revealed {
 }
 
 </style>
+
+<!-- Translations -->
+<script src="/translations.js"></script>
 </head>
 <body>
 
@@ -3514,32 +3517,8 @@ html.js .reveal-right.revealed {
   /* ──────────────────────────────────────────
      I18N - Internationalisation
      ────────────────────────────────────────── */
-  var translations = {
-    fr: {
-      nav: {
-        ile: "L'île",
-        formules: "Formules",
-        journee: "La journée",
-        options: "Options",
-        privatisation: "Privatisation",
-        galerie: "Galerie",
-        faq: "FAQ",
-        cta: "Réserver"
-      }
-    },
-    en: {
-      nav: {
-        ile: "The Island",
-        formules: "Packages",
-        journee: "The Day",
-        options: "Options",
-        privatisation: "Private Events",
-        galerie: "Gallery",
-        faq: "FAQ",
-        cta: "Book Now"
-      }
-    }
-  };
+  // Translations are loaded from translations.js
+  var translations = window.TRANSLATIONS || {};
 
   var currentLang = localStorage.getItem('lang') || 'fr';
 
