@@ -4012,9 +4012,11 @@ html.js .reveal-right.revealed {
 
       carousel.innerHTML = eventsToShow.map((event, index) => {
         const actualIndex = isMobile ? currentIndex : index;
+        // Support both 'images' array and old 'image' format
+        const eventImage = event.images?.[0] || event.image || '/images/event-1.jpg';
         return `
           <div class="carousel-item clickable-event" id="card-${actualIndex}" data-event-index="${actualIndex}" style="cursor: pointer;">
-            <img src="${event.image}" alt="${event.title}" loading="lazy">
+            <img src="${eventImage}" alt="${event.title}" loading="lazy">
             <div class="carousel-item-overlay">
               ${formatDate(event.date) ? `<div class="carousel-item-date">${formatDate(event.date)}</div>` : ''}
               <h3 class="carousel-item-title">${event.title}</h3>
