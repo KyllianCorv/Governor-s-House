@@ -2,6 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".",
   "cleanUrls": true,
+  "public": true,
   "headers": [
     {
       "source": "/sitemap.xml",
@@ -25,12 +26,5 @@
         }
       ]
     }
-  ],
-  "routes": [
-    {
-      "src": "/sitemap.xml",
-      "dest": "/sitemap.xml"
-    }
   ]
 }
-
