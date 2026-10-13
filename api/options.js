@@ -15,8 +15,21 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Check if force reset is requested
+    const forceReset = req.query.force_reset === 'true';
+    const password = req.query.password;
+    const adminPassword = process.env.ADMIN_PASSWORD || 'governorshouse2026';
+
     // Récupérer les options depuis Upstash Redis
     let options = await redis.get('reservation_options');
+
+    // Force reset if requested with correct password
+    if (forceReset) {
+      if (password !== adminPassword) {
+        return res.status(401).json({ error: 'Mot de passe incorrect' });
+      }
+      options = null; // Force reinitialize
+    }
 
     // Si pas d'options, initialiser avec des données par défaut
     if (!options) {
