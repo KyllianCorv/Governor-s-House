@@ -780,32 +780,111 @@ html.js .reveal-right.revealed {
 .ile-text .body-text { margin-bottom: 16px; }
 .ile-text .btn-secondary { margin-top: 20px; }
 
-.ile-mosaic {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 8px;
+.ile-carousel-wrapper {
+  position: relative;
   aspect-ratio: 4/5;
   max-height: 520px;
+  overflow: hidden;
+  border-radius: 4px;
 }
-.ile-mosaic-tall {
-  grid-row: 1 / 3;
+
+.ile-carousel-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  transition: transform 0.4s ease-in-out;
+}
+
+.ile-carousel-item {
+  min-width: 100%;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
-.ile-mosaic-tall img,
-.ile-mosaic-small img {
-  width: 100%; height: 100%;
+
+.ile-carousel-item img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
 }
-.ile-mosaic-small {
-  overflow: hidden;
-  min-height: 0;
+
+.ile-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(251, 248, 243, 0.9);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ile-carousel-arrow:hover {
+  background: var(--ivory);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ile-carousel-arrow svg {
+  width: 24px;
+  height: 24px;
+  color: var(--ink);
+}
+
+.ile-carousel-arrow-left {
+  left: 16px;
+}
+
+.ile-carousel-arrow-right {
+  right: 16px;
+}
+
+.ile-carousel-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.ile-carousel-arrow:disabled:hover {
+  background: rgba(251, 248, 243, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ile-carousel-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 2;
+}
+
+.ile-carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(251, 248, 243, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(251, 248, 243, 0.8);
+}
+
+.ile-carousel-dot.active {
+  background: var(--ivory);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width:991px) {
   .ile-grid { grid-template-columns: 1fr; }
-  .ile-mosaic { order: -1; }
+  .ile-carousel-wrapper { order: -1; }
 }
 
 /* =============================================
@@ -967,12 +1046,60 @@ html.js .reveal-right.revealed {
 .journee-header { margin-bottom: clamp(28px,3vw,44px); }
 .journee-header .eyebrow { margin-bottom: 20px; }
 
+.journee-formule-switch {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.formule-switch-btn {
+  padding: 12px 32px;
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.02em;
+}
+
+.formule-switch-btn:hover {
+  border-color: var(--brass);
+  color: var(--brass);
+}
+
+.formule-switch-btn.active {
+  background: var(--brass);
+  border-color: var(--brass);
+  color: var(--ivory);
+}
+
+@media (max-width: 640px) {
+  .journee-formule-switch {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .formule-switch-btn {
+    width: 100%;
+    padding: 14px 24px;
+  }
+}
+
 .timeline {
-  display: grid;
+  display: none;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   column-gap: clamp(24px, 4vw, 56px);
   row-gap: 34px;
   position: relative;
+}
+
+.timeline.active {
+  display: grid;
 }
 .timeline::before { display: none; }
 .tl-step {
@@ -1784,12 +1911,16 @@ html.js .reveal-right.revealed {
   .chiffre-label { font-size: 11px; }
 }
 
-/* --- L'ÎLE mosaïque --- */
+/* --- L'ÎLE carousel --- */
 @media (max-width:991px) {
-  .ile-mosaic { aspect-ratio: 3/4; max-height: 420px; }
+  .ile-carousel-wrapper { aspect-ratio: 3/4; max-height: 420px; }
 }
 @media (max-width:768px) {
-  .ile-mosaic { display: none; }
+  .ile-carousel-wrapper { aspect-ratio: 1/1; max-height: 350px; }
+  .ile-carousel-arrow { width: 40px; height: 40px; }
+  .ile-carousel-arrow svg { width: 20px; height: 20px; }
+  .ile-carousel-arrow-left { left: 12px; }
+  .ile-carousel-arrow-right { right: 12px; }
 }
 
 /* --- CITATION --- */
@@ -2103,6 +2234,160 @@ html.js .reveal-right.revealed {
   border-radius: 4px;
 }
 
+/* =============================================
+   EVENT VIEWER MODAL
+   ============================================= */
+.event-viewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.event-viewer.open {
+  display: flex;
+  opacity: 1;
+}
+
+.event-viewer-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(14, 27, 44, 0.85);
+  backdrop-filter: blur(4px);
+}
+
+.event-viewer-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.event-viewer-close {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--ivory);
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  transition: all 0.3s ease;
+  z-index: 3;
+}
+
+.event-viewer-close:hover {
+  transform: rotate(90deg);
+  background: var(--brass);
+  color: var(--ivory);
+}
+
+.event-viewer-card {
+  background: var(--ivory);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.event-viewer-image {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4/5;
+}
+
+.event-viewer-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.event-viewer-details {
+  padding: clamp(32px, 5vw, 48px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.event-viewer-date {
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  color: var(--brass);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.event-viewer-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 4vw, 36px);
+  color: var(--ink);
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.event-viewer-description {
+  font-family: 'Jost', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  margin-bottom: 32px;
+}
+
+.event-viewer-details .btn-primary {
+  width: 100%;
+  text-align: center;
+  margin-top: auto;
+}
+
+@media (max-width: 768px) {
+  .event-viewer-card {
+    grid-template-columns: 1fr;
+  }
+
+  .event-viewer-image {
+    aspect-ratio: 16/9;
+  }
+
+  .event-viewer-content {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .event-viewer-close {
+    top: -40px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+
+  .event-viewer-details {
+    padding: 28px 24px;
+  }
+}
+
 @media (max-width: 1024px) {
   .carousel-item {
     flex: 0 0 calc(50% - 12px);
@@ -2308,28 +2593,44 @@ html.js .reveal-right.revealed {
 
         <a href="#formules" class="btn-secondary reveal-left stagger-4" style="margin-top:32px;">Découvrir les formules</a>
       </div>
-      <div class="ile-mosaic reveal-right stagger-2">
-        <div class="ile-mosaic-tall">
-          <img
-            src="./images/IMG_5032.jpeg"
-            alt="Vue du lagon de l'île Plate, eau turquoise et sable blanc, côte nord de Maurice"
-            loading="lazy" width="600" height="1000"
-          >
+      <div class="ile-carousel-wrapper reveal-right stagger-2">
+        <div class="ile-carousel-container" id="ile-carousel">
+          <div class="ile-carousel-item">
+            <img
+              src="./images/IMG_5032.jpeg"
+              alt="Vue du lagon de l'île Plate, eau turquoise et sable blanc, côte nord de Maurice"
+              loading="lazy" width="600" height="1000"
+            >
+          </div>
+          <div class="ile-carousel-item">
+            <img
+              src="./images/IMG_5075.jpeg"
+              alt="Terrasse de la Governor's House surplombant le lagon"
+              loading="lazy" width="600" height="450"
+            >
+          </div>
+          <div class="ile-carousel-item">
+            <img
+              src="./images/IMG_4961.jpeg"
+              alt="Lagon cristallin vu depuis la plage de l'île Plate"
+              loading="lazy" width="600" height="450"
+            >
+          </div>
         </div>
-        <div class="ile-mosaic-small">
-          <img
-            src="./images/IMG_5075.jpeg"
-            alt="Terrasse de la Governor's House surplombant le lagon"
-            loading="lazy" width="600" height="450"
-          >
-        </div>
-        <div class="ile-mosaic-small">
-          <img
-            src="./images/IMG_4961.jpeg"
-            alt="Lagon cristallin vu depuis la plage de l'île Plate"
-            loading="lazy" width="600" height="450"
-          >
-        </div>
+
+        <button class="ile-carousel-arrow ile-carousel-arrow-left" id="ile-carousel-prev" aria-label="Image précédente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <button class="ile-carousel-arrow ile-carousel-arrow-right" id="ile-carousel-next" aria-label="Image suivante">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        <div class="ile-carousel-dots" id="ile-carousel-dots"></div>
       </div>
     </div>
   </div>
@@ -2433,13 +2734,27 @@ html.js .reveal-right.revealed {
       <h2 class="reveal-el stagger-1">Une journée sur l'<em>île</em>.</h2>
     </div>
 
-    <div class="timeline">
+    <div class="journee-formule-switch">
+      <button class="formule-switch-btn active" data-formule="gouverneur">Le Déjeuner du Gouverneur</button>
+      <button class="formule-switch-btn" data-formule="sable">Flat Island Beach Menu</button>
+    </div>
+
+    <div class="timeline timeline-gouverneur active">
       <div class="tl-step reveal-left"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">9h00</span><p class="tl-title">Embarquement</p><p class="tl-desc">Rendez-vous au Sunset Café, Grand Baie. Départ dès que le groupe est à bord.</p></div>
-      <div class="tl-step reveal-left stagger-1"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">La traversée</span><p class="tl-title">25 min ou 1h15</p><p class="tl-desc">En bateau rapide ou en catamaran selon le groupe du jour. Nous vous précisons le bateau et l’horaire exact la veille au soir.</p></div>
-      <div class="tl-step reveal-left stagger-2"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">10h30</span><p class="tl-title">Arrivée sur l’île</p><p class="tl-desc">Débarquement sur la plage, serviette fraîche et premier verre. Puis le lagon, le snorkeling, la flânerie - ou rien du tout.</p></div>
-      <div class="tl-step reveal-left stagger-3"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">Midi</span><p class="tl-title">À table</p><p class="tl-desc">Les tapas circulent, puis le déjeuner gourmet pour la formule signature. Au beach club, le finger food est servi en continu.</p></div>
-      <div class="tl-step reveal-left stagger-4"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">15h00</span><p class="tl-title">Le DJ s’installe</p><p class="tl-desc">Samedi et dimanche, le son monte avec l’après-midi. La plage devient beach club jusqu’au départ.</p></div>
-      <div class="tl-step reveal-left stagger-5"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">15h30 / 17h30</span><p class="tl-title">Retour</p><p class="tl-desc">Le Déjeuner du Gouverneur rentre à 15h30. Le Flat Island Beach Menu rentre à 17h30.</p></div>
+      <div class="tl-step reveal-left stagger-1"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">La traversée</span><p class="tl-title">25 min ou 1h15</p><p class="tl-desc">En bateau rapide ou en catamaran selon le groupe du jour. Nous vous précisons le bateau et l'horaire exact la veille au soir.</p></div>
+      <div class="tl-step reveal-left stagger-2"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">10h30</span><p class="tl-title">Arrivée sur l'île</p><p class="tl-desc">Débarquement sur la plage, serviette fraîche et premier verre. Puis le lagon, le snorkeling, la flânerie - ou rien du tout.</p></div>
+      <div class="tl-step reveal-left stagger-3"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">11h30</span><p class="tl-title">Tapas à l'arrivée</p><p class="tl-desc">Tartare de thon à la mangue, brochette de crevettes, risotto à la truffe. Trois tapas travaillés servis dès votre installation.</p></div>
+      <div class="tl-step reveal-left stagger-4"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">13h00</span><p class="tl-title">Déjeuner gourmet</p><p class="tl-desc">Menu de la mer travaillé par le chef : langouste, gambas, pêche du jour et accompagnements raffinés.</p></div>
+      <div class="tl-step reveal-left stagger-5"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">15h30</span><p class="tl-title">Retour à Grand Baie</p><p class="tl-desc">Embarquement pour le retour. Arrivée au Sunset Café vers 16h00.</p></div>
+    </div>
+
+    <div class="timeline timeline-sable">
+      <div class="tl-step reveal-left"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">9h00</span><p class="tl-title">Embarquement</p><p class="tl-desc">Rendez-vous au Sunset Café, Grand Baie (ou arrivée par vos propres moyens).</p></div>
+      <div class="tl-step reveal-left stagger-1"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">La traversée</span><p class="tl-title">25 min ou 1h15</p><p class="tl-desc">En bateau rapide ou en catamaran selon le groupe du jour.</p></div>
+      <div class="tl-step reveal-left stagger-2"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">10h30</span><p class="tl-title">Arrivée sur l'île</p><p class="tl-desc">Installation sur votre transat, serviette fraîche et premier cocktail. La plage est à vous.</p></div>
+      <div class="tl-step reveal-left stagger-3"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">Toute la journée</span><p class="tl-title">Service continu</p><p class="tl-desc">Finger food servi en continu, softs à volonté et cinq consommations au choix (cocktails ou bière).</p></div>
+      <div class="tl-step reveal-left stagger-4"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">15h00</span><p class="tl-title">DJ set sur la plage</p><p class="tl-desc">Samedi et dimanche : le son monte avec l'après-midi. La plage devient beach club.</p></div>
+      <div class="tl-step reveal-left stagger-5"><span class="tl-dot" aria-hidden="true"></span><span class="tl-time">17h30</span><p class="tl-title">Retour au coucher du soleil</p><p class="tl-desc">Embarquement pour le retour. Arrivée à Grand Baie vers 18h00.</p></div>
     </div>
   </div>
 </section>
@@ -2632,6 +2947,26 @@ html.js .reveal-right.revealed {
     </div>
   </div>
 </section>
+
+<!-- Event Viewer Modal -->
+<div id="event-viewer" class="event-viewer">
+  <div class="event-viewer-overlay"></div>
+  <div class="event-viewer-content">
+    <button class="event-viewer-close" id="event-viewer-close" aria-label="Fermer">×</button>
+    <div class="event-viewer-card">
+      <div class="event-viewer-image">
+        <img id="event-viewer-img" src="" alt="">
+      </div>
+      <div class="event-viewer-details">
+        <div class="event-viewer-date" id="event-viewer-date"></div>
+        <h3 class="event-viewer-title" id="event-viewer-title"></h3>
+        <p class="event-viewer-description" id="event-viewer-description"></p>
+        <a href="#reserver" class="btn-primary" id="event-reserve-btn">Réserver pour cet événement</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ============================================
      11. GALERIE
      ============================================ -->
@@ -2878,19 +3213,12 @@ html.js .reveal-right.revealed {
         </div>
 
         <!-- Options -->
-        <!-- <div class="field">
+        <div class="field" id="options-container">
           <label>Options</label>
-          <div class="options-checks">
-            <label class="check-row"><input type="checkbox" name="opt_transfert" value="0" data-opt-price="0"><span>Transfert hôtel - sur demande</span></label>
-            <label class="check-row"><input type="checkbox" name="opt_speedboat" value="0" data-opt-price="0"><span>Speedboat privé (devis)</span></label>
-            <label class="check-row"><input type="checkbox" name="opt_chef" value="0" data-opt-price="0"><span>Cuisinier privé - sur demande (à confirmer)</span></label>
-            <label class="check-row"><input type="checkbox" name="opt_boissons" value="0" data-opt-price="0"><span>Carte des vins et cocktails - sur demande</span></label>
-            <label class="check-row"><input type="checkbox" name="opt_champagne" value="0" data-opt-price="0"><span>Champagne - sur demande</span></label>
-            <label class="check-row"><input type="checkbox" name="opt_snorkeling" value="0" data-opt-price="0"><span>Snorkeling (inclus)</span></label>
-            <label class="check-row"><input type="checkbox" name="opt_photo" value="0" data-opt-price="0"><span>Photographe - sur demande (à confirmer)</span></label>
-            <label class="check-row"><input type="checkbox" name="opt_massage" value="0" data-opt-price="0"><span>Massage - sur demande (à confirmer)</span></label>
+          <div class="options-checks" id="options-list">
+            <!-- Options will be loaded dynamically -->
           </div>
-        </div> -->
+        </div>
 
         <!-- Nom / Email -->
         <div class="field-row">
@@ -3437,6 +3765,50 @@ html.js .reveal-right.revealed {
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   /* ──────────────────────────────────────────
+     LOAD RESERVATION OPTIONS
+     ────────────────────────────────────────── */
+  (function loadReservationOptions() {
+    var optionsList = $('#options-list');
+    var optionsContainer = $('#options-container');
+
+    if (!optionsList) return;
+
+    fetch('/api/options')
+      .then(function(response) { return response.json(); })
+      .then(function(data) {
+        var options = data.options || [];
+
+        if (options.length === 0) {
+          // Hide options section if no options available
+          if (optionsContainer) optionsContainer.style.display = 'none';
+          return;
+        }
+
+        // Render options
+        optionsList.innerHTML = options.map(function(opt) {
+          var disabled = opt.locked ? 'disabled' : '';
+          var checked = opt.locked ? 'checked' : '';
+          var priceText = opt.priceLabel || (opt.price > 0 ? opt.price + ' €' : 'sur demande');
+
+          return '<label class="check-row">' +
+            '<input type="checkbox" name="' + opt.id + '" value="' + opt.price + '" ' +
+            'data-opt-price="' + opt.price + '" ' + disabled + ' ' + checked + '>' +
+            '<span>' + opt.label + (priceText ? ' - ' + priceText : '') + '</span>' +
+            '</label>';
+        }).join('');
+
+        // Re-attach change listeners for summary update
+        $$('input[type="checkbox"]', optionsList).forEach(function(checkbox) {
+          checkbox.addEventListener('change', updateSummary);
+        });
+      })
+      .catch(function(error) {
+        console.error('Error loading options:', error);
+        if (optionsContainer) optionsContainer.style.display = 'none';
+      });
+  })();
+
+  /* ──────────────────────────────────────────
      INITIAL SUMMARY UPDATE
      ────────────────────────────────────────── */
   updateSummary();
@@ -3495,7 +3867,7 @@ html.js .reveal-right.revealed {
       carousel.innerHTML = eventsToShow.map((event, index) => {
         const actualIndex = isMobile ? currentIndex : index;
         return `
-          <div class="carousel-item" id="card-${actualIndex}">
+          <div class="carousel-item clickable-event" id="card-${actualIndex}" data-event-index="${actualIndex}" style="cursor: pointer;">
             <img src="${event.image}" alt="${event.title}" loading="lazy">
             <div class="carousel-item-overlay">
               ${formatDate(event.date) ? `<div class="carousel-item-date">${formatDate(event.date)}</div>` : ''}
@@ -3507,6 +3879,20 @@ html.js .reveal-right.revealed {
       }).join('');
 
       updateDots();
+      attachEventClickHandlers();
+    }
+
+    // Attacher les gestionnaires de clic aux événements
+    function attachEventClickHandlers() {
+      document.querySelectorAll('.clickable-event').forEach(card => {
+        card.addEventListener('click', function() {
+          const eventIndex = parseInt(this.dataset.eventIndex);
+          const event = events[eventIndex];
+          if (event) {
+            openEventViewer(event);
+          }
+        });
+      });
     }
 
     // Mettre à jour les dots
@@ -3591,6 +3977,238 @@ html.js .reveal-right.revealed {
 
     // Initialiser
     loadEvents();
+  })();
+
+  /* ──────────────────────────────────────────
+     EVENT VIEWER MODAL
+     ────────────────────────────────────────── */
+  var eventViewerModal = $('#event-viewer');
+  var eventViewerClose = $('#event-viewer-close');
+  var currentEventDate = '';
+
+  function openEventViewer(event) {
+    if (!eventViewerModal) return;
+
+    // Populate modal with event data
+    $('#event-viewer-img').src = event.image;
+    $('#event-viewer-img').alt = event.title;
+    $('#event-viewer-title').textContent = event.title;
+    $('#event-viewer-description').textContent = event.description;
+
+    // Format date
+    var dateStr = formatEventDate(event.date);
+    $('#event-viewer-date').textContent = dateStr;
+
+    // Store event date for pre-filling reservation form
+    currentEventDate = event.date;
+
+    // Open modal
+    eventViewerModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeEventViewer() {
+    if (!eventViewerModal) return;
+    eventViewerModal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function formatEventDate(dateString) {
+    if (!dateString) return '';
+    var m = String(dateString).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    var date = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  // Close modal events
+  if (eventViewerClose) {
+    eventViewerClose.addEventListener('click', closeEventViewer);
+  }
+
+  if (eventViewerModal) {
+    // Close on overlay click
+    $$('.event-viewer-overlay').forEach(function(overlay) {
+      overlay.addEventListener('click', closeEventViewer);
+    });
+
+    // Reserve button - pre-fill form with event date
+    var reserveBtn = $('#event-reserve-btn');
+    if (reserveBtn) {
+      reserveBtn.addEventListener('click', function(e) {
+        closeEventViewer();
+
+        // Pre-fill date field
+        setTimeout(function() {
+          var dateField = $('#f-date');
+          if (dateField && currentEventDate) {
+            dateField.value = currentEventDate;
+          }
+        }, 300);
+      });
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && eventViewerModal.classList.contains('open')) {
+        closeEventViewer();
+      }
+    });
+  }
+
+  // Make openEventViewer globally accessible
+  window.openEventViewer = openEventViewer;
+
+  /* ──────────────────────────────────────────
+     JOURNEE - Formule Switch
+     ────────────────────────────────────────── */
+  (function initJourneeSwitcher() {
+    var switchButtons = $$('.formule-switch-btn');
+    var timelines = $$('.timeline');
+
+    switchButtons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var formule = btn.getAttribute('data-formule');
+
+        // Update active button
+        switchButtons.forEach(function(b) {
+          b.classList.remove('active');
+        });
+        btn.classList.add('active');
+
+        // Update active timeline
+        timelines.forEach(function(timeline) {
+          timeline.classList.remove('active');
+          if (timeline.classList.contains('timeline-' + formule)) {
+            timeline.classList.add('active');
+          }
+        });
+      });
+    });
+  })();
+
+  /* ──────────────────────────────────────────
+     CARROUSEL ILE
+     ────────────────────────────────────────── */
+  (function initIleCarousel() {
+    const carousel = $('#ile-carousel');
+    const prevBtn = $('#ile-carousel-prev');
+    const nextBtn = $('#ile-carousel-next');
+    const dotsContainer = $('#ile-carousel-dots');
+
+    if (!carousel) return;
+
+    const items = $$('.ile-carousel-item', carousel);
+    let currentIndex = 0;
+
+    // Render les dots
+    function renderDots() {
+      dotsContainer.innerHTML = items.map((_, index) =>
+        `<span class="ile-carousel-dot ${index === currentIndex ? 'active' : ''}" data-index="${index}"></span>`
+      ).join('');
+
+      // Event listeners pour les dots
+      $$('.ile-carousel-dot', dotsContainer).forEach(function(dot) {
+        dot.addEventListener('click', function() {
+          currentIndex = parseInt(dot.getAttribute('data-index'));
+          updateCarousel();
+        });
+      });
+    }
+
+    // Mettre à jour le carrousel
+    function updateCarousel() {
+      const translateX = -currentIndex * 100;
+      carousel.style.transform = 'translateX(' + translateX + '%)';
+
+      // Update dots
+      $$('.ile-carousel-dot', dotsContainer).forEach(function(dot, index) {
+        dot.classList.toggle('active', index === currentIndex);
+      });
+
+      // Update arrow states
+      if (prevBtn) prevBtn.disabled = currentIndex === 0;
+      if (nextBtn) nextBtn.disabled = currentIndex === items.length - 1;
+    }
+
+    // Navigation
+    function goPrev() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateCarousel();
+      }
+    }
+
+    function goNext() {
+      if (currentIndex < items.length - 1) {
+        currentIndex++;
+        updateCarousel();
+      }
+    }
+
+    // Event listeners
+    if (prevBtn) prevBtn.addEventListener('click', goPrev);
+    if (nextBtn) nextBtn.addEventListener('click', goNext);
+
+    // Swipe sur mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    carousel.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    carousel.addEventListener('touchend', function(e) {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          goNext();
+        } else {
+          goPrev();
+        }
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight') goNext();
+    });
+
+    // Initialiser
+    renderDots();
+    updateCarousel();
+
+    // Auto-play (optional - 5 secondes)
+    let autoplayInterval = setInterval(function() {
+      if (currentIndex < items.length - 1) {
+        goNext();
+      } else {
+        currentIndex = 0;
+        updateCarousel();
+      }
+    }, 5000);
+
+    // Pause auto-play au survol
+    carousel.addEventListener('mouseenter', function() {
+      clearInterval(autoplayInterval);
+    });
+
+    carousel.addEventListener('mouseleave', function() {
+      autoplayInterval = setInterval(function() {
+        if (currentIndex < items.length - 1) {
+          goNext();
+        } else {
+          currentIndex = 0;
+          updateCarousel();
+        }
+      }, 5000);
+    });
   })();
 
 })();

@@ -573,6 +573,101 @@
       .add-event-section {
         padding: 28px 20px;
       }
+    }
+
+    /* =============================================
+       OPTIONS MANAGEMENT
+       ============================================= */
+    .options-management {
+      display: grid;
+      gap: 16px;
+    }
+
+    .option-item {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      gap: 16px;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .option-item:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .option-item.disabled {
+      opacity: 0.5;
+      background: var(--sand);
+    }
+
+    .option-toggle {
+      width: 48px;
+      height: 28px;
+      background: var(--muted);
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .option-toggle.active {
+      background: var(--brass);
+    }
+
+    .option-toggle::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+
+    .option-toggle.active::after {
+      transform: translateX(20px);
+    }
+
+    .option-info {
+      flex: 1;
+    }
+
+    .option-name {
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .option-desc {
+      font-size: 14px;
+      color: var(--ink-soft);
+    }
+
+    .option-lock {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--ink-soft);
+    }
+
+    .option-lock input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .option-item {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
 
       .drop-zone {
         padding: 32px 20px;
@@ -684,6 +779,16 @@
             </div>
             <button type="submit" class="btn btn-success">Ajouter l'événement</button>
           </form>
+        </div>
+
+        <!-- Options Management Section -->
+        <div class="add-event-section" style="margin-top: 60px;">
+          <h2>Gestion des Options de Réservation</h2>
+          <p class="subtitle" style="margin-top: -16px; margin-bottom: 24px;">Activez/désactivez les options disponibles dans le formulaire de réservation. Les options verrouillées seront cochées par défaut.</p>
+
+          <div id="options-list" class="options-management"></div>
+
+          <button onclick="saveOptions()" class="btn btn-primary" style="margin-top: 24px;">Enregistrer les options</button>
         </div>
       </div>
     </div>
@@ -1069,6 +1174,113 @@
         showAlert('Erreur lors de l\'upload: ' + error.message, 'error');
       }
     }
+
+    // ==========================================
+    // OPTIONS MANAGEMENT
+    // ==========================================
+    let reservationOptions = [];
+
+    async function loadOptions() {
+      try {
+        const response = await fetch('/api/options');
+        const data = await response.json();
+
+        // Get all options including disabled ones
+        const allOptionsResponse = await fetch('/api/admin/update-options', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: adminPassword, action: 'get' })
+        });
+
+        if (allOptionsResponse.ok) {
+          const allData = await allOptionsResponse.json();
+          reservationOptions = allData.options || [];
+        } else {
+          // Fallback: use default options
+          reservationOptions = [
+            { id: 'opt_transfert', label: 'Transfert hôtel', description: 'Service de transfert depuis votre hôtel', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
+            { id: 'opt_speedboat', label: 'Speedboat privé', description: 'Traversée en speedboat privatif', price: 0, priceLabel: 'sur devis', enabled: true, locked: false },
+            { id: 'opt_chef', label: 'Cuisinier privé', description: 'Chef cuisinier dédié pour votre groupe', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
+            { id: 'opt_boissons', label: 'Carte des vins et cocktails', description: 'Sélection premium de vins et cocktails', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
+            { id: 'opt_champagne', label: 'Champagne', description: 'Bouteille de champagne', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
+            { id: 'opt_snorkeling', label: 'Snorkeling', description: 'Masques et tubas fournis', price: 0, priceLabel: 'inclus', enabled: true, locked: true },
+            { id: 'opt_photo', label: 'Photographe', description: 'Photographe professionnel pour la journée', price: 0, priceLabel: 'sur demande', enabled: true, locked: false },
+            { id: 'opt_massage', label: 'Massage', description: 'Massage bien-être sur la plage', price: 0, priceLabel: 'sur demande', enabled: true, locked: false }
+          ];
+        }
+
+        renderOptions();
+      } catch (error) {
+        console.error('Error loading options:', error);
+        showAlert('Erreur lors du chargement des options', 'error');
+      }
+    }
+
+    function renderOptions() {
+      const container = document.getElementById('options-list');
+      if (!container) return;
+
+      container.innerHTML = reservationOptions.map((opt, index) => `
+        <div class="option-item ${!opt.enabled ? 'disabled' : ''}" data-index="${index}">
+          <div class="option-toggle ${opt.enabled ? 'active' : ''}" onclick="toggleOption(${index})"></div>
+          <div class="option-info">
+            <div class="option-name">${opt.label}</div>
+            <div class="option-desc">${opt.description} - ${opt.priceLabel}</div>
+          </div>
+          <div class="option-lock">
+            <input type="checkbox" ${opt.locked ? 'checked' : ''} onchange="toggleLock(${index})" ${!opt.enabled ? 'disabled' : ''}>
+            <label>Verrouillé</label>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleOption(index) {
+      reservationOptions[index].enabled = !reservationOptions[index].enabled;
+      if (!reservationOptions[index].enabled) {
+        reservationOptions[index].locked = false;
+      }
+      renderOptions();
+    }
+
+    function toggleLock(index) {
+      const checkbox = event.target;
+      reservationOptions[index].locked = checkbox.checked;
+    }
+
+    async function saveOptions() {
+      try {
+        const response = await fetch('/api/admin/update-options', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            password: adminPassword,
+            options: reservationOptions
+          })
+        });
+
+        if (response.status === 401) {
+          showAlert('Session expirée. Veuillez vous reconnecter.', 'error');
+          logout();
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la sauvegarde');
+        }
+
+        showAlert('Options mises à jour avec succès!', 'success');
+      } catch (error) {
+        showAlert('Erreur lors de la sauvegarde des options', 'error');
+      }
+    }
+
+    // Load options when admin panel is shown
+    const originalShowAdminPanel = showAdminPanel;
+    showAdminPanel = async function() {
+      await originalShowAdminPanel();
+      await loadOptions();
+    };
   </script>
 </body>
 </html>
