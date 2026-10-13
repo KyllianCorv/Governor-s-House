@@ -777,6 +777,36 @@
               <label for="new-description">Description</label>
               <textarea id="new-description" placeholder="Description de l'événement"></textarea>
             </div>
+
+            <div class="form-group">
+              <label for="new-reservation-date">Date de réservation</label>
+              <input type="date" id="new-reservation-date">
+              <small>Date qui sera pré-remplie dans le formulaire (peut être différente de la date d'affichage)</small>
+            </div>
+
+            <div class="form-group">
+              <label>Formules disponibles</label>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px;">
+                  <input type="checkbox" id="formule-gouverneur" value="gouverneur" checked>
+                  <span>Le Déjeuner du Gouverneur</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px;">
+                  <input type="checkbox" id="formule-sable" value="sable">
+                  <span>Flat Island Beach Menu</span>
+                </label>
+              </div>
+              <small>Sélectionnez une ou plusieurs formules pour cet événement</small>
+            </div>
+
+            <div class="form-group">
+              <label>Options de réservation</label>
+              <div id="event-options-config" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Options will be loaded here -->
+              </div>
+              <small>Cochez les options à pré-sélectionner. Utilisez le cadenas pour bloquer une option (non modifiable par l'utilisateur)</small>
+            </div>
+
             <button type="submit" class="btn btn-success">Ajouter l'événement</button>
           </form>
         </div>
@@ -893,6 +923,22 @@
         const dateText = formatDate(event.date);
         const imgFallback = "this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22267%22%3E%3Crect fill=%22%23F3EDE3%22 width=%22200%22 height=%22267%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23B08D57%22 font-family=%22Playfair Display%22 font-size=%2216%22%3EImage%3C/text%3E%3C/svg%3E'";
 
+        const formuleNames = {
+          'gouverneur': 'Gouverneur',
+          'sable': 'Beach Menu'
+        };
+        const formulesText = (event.formules || ['gouverneur']).map(f => formuleNames[f] || f).join(', ');
+
+        const optionLabels = {
+          'opt_transfert': 'Transfert', 'opt_speedboat': 'Speedboat', 'opt_chef': 'Chef',
+          'opt_boissons': 'Vins', 'opt_champagne': 'Champagne', 'opt_snorkeling': 'Snorkeling',
+          'opt_photo': 'Photo', 'opt_massage': 'Massage'
+        };
+
+        const preselectedText = (event.preselectedOptions || []).map(o => optionLabels[o] || o).join(', ') || 'Aucune';
+        const lockedText = (event.lockedOptions || []).map(o => optionLabels[o] || o).join(', ') || 'Aucune';
+        const reservationDateText = event.reservationDate ? formatDate(event.reservationDate) : dateText;
+
         return `
         <div class="event-card">
           <div class="event-card-header">
@@ -905,8 +951,14 @@
           <div class="event-preview" ${event.image ? '' : 'style="grid-template-columns:1fr"'}>
             ${event.image ? `<img src="${event.image}" alt="${event.title || ''}" class="event-preview-img" onerror="${imgFallback}">` : ''}
             <div class="event-preview-info">
-              ${dateText ? `<div class="event-date">${dateText}</div>` : ''}
+              ${dateText ? `<div class="event-date"><strong>Date affichée :</strong> ${dateText}</div>` : ''}
+              ${reservationDateText !== dateText ? `<div style="font-size: 13px; color: var(--ink-soft); margin-top: 4px;"><strong>Date de réservation :</strong> ${reservationDateText}</div>` : ''}
               ${event.description ? `<p class="event-description">${event.description}</p>` : ''}
+              <div style="margin-top: 12px; font-size: 13px; color: var(--ink-soft);">
+                <div><strong>Formules :</strong> ${formulesText}</div>
+                <div style="margin-top: 4px;"><strong>Options pré-sélectionnées :</strong> ${preselectedText}</div>
+                <div style="margin-top: 4px;"><strong>Options verrouillées :</strong> ${lockedText}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -951,24 +1003,48 @@
 
     function editEvent(index) {
       const event = events[index];
+
+      // Pour simplifier, on utilise prompt pour les champs texte
       const newImage = prompt('URL de l\'image:', event.image);
       if (newImage === null) return;
 
       const newTitle = prompt('Titre:', event.title);
       if (newTitle === null) return;
 
-      const newDate = prompt('Date (YYYY-MM-DD):', event.date);
+      const newDate = prompt('Date d\'affichage (YYYY-MM-DD):', event.date);
       if (newDate === null) return;
 
       const newDescription = prompt('Description:', event.description);
       if (newDescription === null) return;
+
+      const newReservationDate = prompt('Date de réservation (YYYY-MM-DD):', event.reservationDate || event.date);
+      if (newReservationDate === null) return;
+
+      // Pour les formules, on demande sous forme de texte
+      const currentFormules = (event.formules || ['gouverneur']).join(', ');
+      const formulesInput = prompt('Formules (séparées par virgule : gouverneur, sable):', currentFormules);
+      if (formulesInput === null) return;
+      const newFormules = formulesInput.split(',').map(f => f.trim()).filter(f => f);
+
+      // Pour les options, on demande les IDs
+      const currentPreselected = (event.preselectedOptions || []).join(', ');
+      const preselectedInput = prompt('Options pré-sélectionnées (IDs séparés par virgule, ex: opt_snorkeling, opt_boissons):', currentPreselected);
+      const newPreselected = preselectedInput ? preselectedInput.split(',').map(o => o.trim()).filter(o => o) : [];
+
+      const currentLocked = (event.lockedOptions || []).join(', ');
+      const lockedInput = prompt('Options verrouillées (IDs séparés par virgule):', currentLocked);
+      const newLocked = lockedInput ? lockedInput.split(',').map(o => o.trim()).filter(o => o) : [];
 
       events[index] = {
         id: event.id,
         image: newImage,
         title: newTitle,
         date: newDate,
-        description: newDescription
+        description: newDescription,
+        formules: newFormules.length > 0 ? newFormules : ['gouverneur'],
+        reservationDate: newReservationDate,
+        preselectedOptions: newPreselected,
+        lockedOptions: newLocked
       };
 
       saveEvents();
@@ -989,12 +1065,44 @@
         return;
       }
 
+      // Collect selected formules
+      const formules = [];
+      if (document.getElementById('formule-gouverneur').checked) formules.push('gouverneur');
+      if (document.getElementById('formule-sable').checked) formules.push('sable');
+
+      if (formules.length === 0) {
+        showAlert('Veuillez sélectionner au moins une formule', 'error');
+        return;
+      }
+
+      // Collect preselected options
+      const preselectedOptions = [];
+      const lockedOptions = [];
+      document.querySelectorAll('.event-option-check').forEach(checkbox => {
+        if (checkbox.checked) {
+          preselectedOptions.push(checkbox.dataset.option);
+        }
+      });
+
+      document.querySelectorAll('.event-option-lock').forEach(checkbox => {
+        if (checkbox.checked) {
+          lockedOptions.push(checkbox.dataset.option);
+        }
+      });
+
+      const dateValue = document.getElementById('new-date').value;
+      const reservationDateValue = document.getElementById('new-reservation-date').value;
+
       const newEvent = {
         id: Date.now(),
         image: document.getElementById('new-image').value,
         title: document.getElementById('new-title').value,
-        date: document.getElementById('new-date').value,
-        description: document.getElementById('new-description').value
+        date: dateValue,
+        description: document.getElementById('new-description').value,
+        formules: formules,
+        reservationDate: reservationDateValue || dateValue, // Use date if reservationDate is empty
+        preselectedOptions: preselectedOptions,
+        lockedOptions: lockedOptions
       };
 
       events.push(newEvent);
@@ -1003,6 +1111,9 @@
 
       // Reset form
       e.target.reset();
+      // Reset checkboxes
+      document.querySelectorAll('.event-option-check, .event-option-lock').forEach(cb => cb.checked = false);
+      document.getElementById('formule-gouverneur').checked = true;
     }
 
     async function saveEvents() {
@@ -1280,7 +1391,38 @@
     showAdminPanel = async function() {
       await originalShowAdminPanel();
       await loadOptions();
+      await loadEventOptionsConfig();
     };
+
+    // Load available options for event configuration
+    async function loadEventOptionsConfig() {
+      const container = document.getElementById('event-options-config');
+      if (!container) return;
+
+      const availableOptions = [
+        { id: 'opt_transfert', label: 'Transfert hôtel' },
+        { id: 'opt_speedboat', label: 'Speedboat privé' },
+        { id: 'opt_chef', label: 'Cuisinier privé' },
+        { id: 'opt_boissons', label: 'Carte des vins et cocktails' },
+        { id: 'opt_champagne', label: 'Champagne' },
+        { id: 'opt_snorkeling', label: 'Snorkeling' },
+        { id: 'opt_photo', label: 'Photographe' },
+        { id: 'opt_massage', label: 'Massage' }
+      ];
+
+      container.innerHTML = availableOptions.map(opt => `
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: var(--sand); border-radius: 4px;">
+          <label style="display: flex; align-items: center; gap: 8px; flex: 1; cursor: pointer;">
+            <input type="checkbox" class="event-option-check" data-option="${opt.id}">
+            <span>${opt.label}</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--ink-soft); cursor: pointer;">
+            <input type="checkbox" class="event-option-lock" data-option="${opt.id}">
+            <span>🔒</span>
+          </label>
+        </div>
+      `).join('');
+    }
   </script>
 </body>
 </html>

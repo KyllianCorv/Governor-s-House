@@ -2362,6 +2362,49 @@ html.js .reveal-right.revealed {
   margin-top: auto;
 }
 
+.event-viewer-formules {
+  margin-bottom: 24px;
+}
+
+.formule-option {
+  margin-bottom: 12px;
+}
+
+.formule-option label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.formule-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.formule-option label:hover {
+  border-color: var(--brass);
+  background: rgba(176, 141, 87, 0.05);
+}
+
+.formule-option input[type="radio"]:checked + label,
+.formule-option label:has(input[type="radio"]:checked) {
+  border-color: var(--brass);
+  background: rgba(176, 141, 87, 0.1);
+}
+
+.formule-label-text {
+  flex: 1;
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  color: var(--ink);
+}
+
 @media (max-width: 768px) {
   .event-viewer-card {
     grid-template-columns: 1fr;
@@ -2961,6 +3004,12 @@ html.js .reveal-right.revealed {
         <div class="event-viewer-date" id="event-viewer-date"></div>
         <h3 class="event-viewer-title" id="event-viewer-title"></h3>
         <p class="event-viewer-description" id="event-viewer-description"></p>
+
+        <div id="event-viewer-formules" class="event-viewer-formules" style="display: none;">
+          <label style="font-weight: 500; color: var(--ink); margin-bottom: 12px; display: block;">Choisissez votre formule :</label>
+          <div id="event-formules-list"></div>
+        </div>
+
         <a href="#reserver" class="btn-primary" id="event-reserve-btn">Réserver pour cet événement</a>
       </div>
     </div>
@@ -3984,10 +4033,13 @@ html.js .reveal-right.revealed {
      ────────────────────────────────────────── */
   var eventViewerModal = $('#event-viewer');
   var eventViewerClose = $('#event-viewer-close');
-  var currentEventDate = '';
+  var currentEventData = null;
 
   function openEventViewer(event) {
     if (!eventViewerModal) return;
+
+    // Store full event data
+    currentEventData = event;
 
     // Populate modal with event data
     $('#event-viewer-img').src = event.image;
@@ -3999,8 +4051,36 @@ html.js .reveal-right.revealed {
     var dateStr = formatEventDate(event.date);
     $('#event-viewer-date').textContent = dateStr;
 
-    // Store event date for pre-filling reservation form
-    currentEventDate = event.date;
+    // Handle formules
+    var formulesContainer = $('#event-viewer-formules');
+    var formulesList = $('#event-formules-list');
+
+    if (event.formules && event.formules.length > 0) {
+      if (event.formules.length === 1) {
+        // Une seule formule : masquer le sélecteur
+        formulesContainer.style.display = 'none';
+      } else {
+        // Plusieurs formules : afficher le sélecteur
+        formulesContainer.style.display = 'block';
+
+        var formuleNames = {
+          'gouverneur': 'Le Déjeuner du Gouverneur',
+          'sable': 'Flat Island Beach Menu'
+        };
+
+        formulesList.innerHTML = event.formules.map(function(formuleId, index) {
+          var checked = index === 0 ? 'checked' : '';
+          return '<div class="formule-option">' +
+            '<label>' +
+            '<input type="radio" name="event-formule" value="' + formuleId + '" ' + checked + '>' +
+            '<span class="formule-label-text">' + (formuleNames[formuleId] || formuleId) + '</span>' +
+            '</label>' +
+            '</div>';
+        }).join('');
+      }
+    } else {
+      formulesContainer.style.display = 'none';
+    }
 
     // Open modal
     eventViewerModal.classList.add('open');
@@ -4032,18 +4112,56 @@ html.js .reveal-right.revealed {
       overlay.addEventListener('click', closeEventViewer);
     });
 
-    // Reserve button - pre-fill form with event date
+    // Reserve button - pre-fill form with event data
     var reserveBtn = $('#event-reserve-btn');
     if (reserveBtn) {
       reserveBtn.addEventListener('click', function(e) {
+        if (!currentEventData) return;
+
+        // Get selected formule (if multiple)
+        var selectedFormule = currentEventData.formules && currentEventData.formules.length === 1
+          ? currentEventData.formules[0]
+          : $$('input[name="event-formule"]:checked')[0]?.value || currentEventData.formules[0];
+
         closeEventViewer();
 
-        // Pre-fill date field
+        // Pre-fill form
         setTimeout(function() {
-          var dateField = $('#f-date');
-          if (dateField && currentEventDate) {
-            dateField.value = currentEventDate;
+          // 1. Pre-fill formule
+          var formuleField = $('#f-formule');
+          if (formuleField && selectedFormule) {
+            formuleField.value = selectedFormule;
+            formuleField.dispatchEvent(new Event('change'));
           }
+
+          // 2. Pre-fill date (using reservationDate)
+          var dateField = $('#f-date');
+          if (dateField && currentEventData.reservationDate) {
+            dateField.value = currentEventData.reservationDate;
+          }
+
+          // 3. Pre-select and lock options
+          var allCheckboxes = $$('#options-list input[type="checkbox"]');
+          allCheckboxes.forEach(function(checkbox) {
+            var optionId = checkbox.name;
+
+            // Décocher tout d'abord
+            checkbox.checked = false;
+            checkbox.disabled = false;
+
+            // Pré-cocher les options de l'événement
+            if (currentEventData.preselectedOptions && currentEventData.preselectedOptions.includes(optionId)) {
+              checkbox.checked = true;
+            }
+
+            // Bloquer les options définies par l'admin
+            if (currentEventData.lockedOptions && currentEventData.lockedOptions.includes(optionId)) {
+              checkbox.disabled = true;
+            }
+          });
+
+          // Update summary
+          updateSummary();
         }, 300);
       });
     }

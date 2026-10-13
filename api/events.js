@@ -26,21 +26,33 @@ export default async function handler(req, res) {
           image: '/images/event-1.jpg',
           title: 'Soirée Beach Club',
           date: '2026-11-15',
-          description: 'DJ set sur la plage au coucher du soleil'
+          description: 'DJ set sur la plage au coucher du soleil',
+          formules: ['sable'], // Formules disponibles pour cet événement
+          reservationDate: '2026-11-15', // Date de réservation (peut être différente de date)
+          preselectedOptions: ['opt_snorkeling'], // Options pré-cochées
+          lockedOptions: ['opt_snorkeling'] // Options bloquées (non modifiables)
         },
         {
           id: 2,
           image: '/images/event-2.jpg',
           title: 'Menu Spécial Homard',
           date: '2026-11-20',
-          description: 'Découvrez notre menu gastronomique'
+          description: 'Découvrez notre menu gastronomique',
+          formules: ['gouverneur'],
+          reservationDate: '2026-11-20',
+          preselectedOptions: ['opt_snorkeling', 'opt_boissons'],
+          lockedOptions: ['opt_snorkeling']
         },
         {
           id: 3,
           image: '/images/event-3.jpg',
           title: 'Privatisation Disponible',
           date: '2026-12-01',
-          description: 'L\'île entière pour votre événement'
+          description: 'L\'île entière pour votre événement',
+          formules: ['gouverneur', 'sable'], // Plusieurs formules disponibles
+          reservationDate: '2026-12-01',
+          preselectedOptions: ['opt_snorkeling'],
+          lockedOptions: []
         }
       ];
 
