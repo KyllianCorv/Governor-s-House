@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       events = [
         {
           id: 1,
-          image: '/images/event-1.jpg',
+          images: ['/images/event-1.jpg'], // Tableau d'images
           title: 'Soirée Beach Club',
           date: '2026-11-15',
           description: 'DJ set sur la plage au coucher du soleil',
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         },
         {
           id: 2,
-          image: '/images/event-2.jpg',
+          images: ['/images/event-2.jpg'],
           title: 'Menu Spécial Homard',
           date: '2026-11-20',
           description: 'Découvrez notre menu gastronomique',
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         },
         {
           id: 3,
-          image: '/images/event-3.jpg',
+          images: ['/images/event-3.jpg'],
           title: 'Privatisation Disponible',
           date: '2026-12-01',
           description: 'L\'île entière pour votre événement',

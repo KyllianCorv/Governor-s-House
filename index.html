@@ -369,6 +369,8 @@ html.js .reveal-el.revealed {
   opacity: 1;
   transform: translateY(0);
   transition: opacity 0.9s cubic-bezier(.2,.7,.2,1), transform 0.9s cubic-bezier(.2,.7,.2,1);
+  margin-bottom: 15px;
+  margin-top: 15px;
 }
 html.js .stagger-1 { transition-delay: 80ms; }
 html.js .stagger-2 { transition-delay: 160ms; }
@@ -1048,7 +1050,7 @@ html.js .reveal-right.revealed {
 
 .journee-formule-switch {
   display: flex;
-  justify-content: center;
+  justify-content: start;
   gap: 16px;
   margin-bottom: 40px;
 }
@@ -1201,7 +1203,7 @@ html.js .reveal-right.revealed {
    ============================================= */
 #options {
   background: var(--ivory);
-  padding: var(--section-pad) 0;
+  /* padding: var(--section-pad) 0; */
 }
 .options-header {
   margin-bottom: clamp(28px,3vw,44px);
@@ -1437,6 +1439,7 @@ html.js .reveal-right.revealed {
 .galerie-btn {
   text-align: center;
   margin-top: clamp(32px,4vw,48px);
+  margin-bottom: clamp(32px,4vw,48px);
 }
 
 /* ── Mobile (2 colonnes, placement automatique) */
@@ -2316,11 +2319,91 @@ html.js .reveal-right.revealed {
   aspect-ratio: 4/5;
 }
 
-.event-viewer-image img {
+.event-viewer-carousel {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+}
+
+.event-viewer-carousel-item {
+  min-width: 100%;
+  height: 100%;
+}
+
+.event-viewer-carousel-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.event-viewer-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.event-viewer-arrow:hover {
+  background: var(--brass);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.event-viewer-arrow:hover svg {
+  color: white;
+}
+
+.event-viewer-arrow svg {
+  width: 20px;
+  height: 20px;
+  color: var(--ink);
+  transition: color 0.3s ease;
+}
+
+.event-viewer-arrow-left {
+  left: 16px;
+}
+
+.event-viewer-arrow-right {
+  right: 16px;
+}
+
+.event-viewer-dots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+
+.event-viewer-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  padding: 0;
+}
+
+.event-viewer-dot.active {
+  background: white;
+  width: 24px;
+  border-radius: 4px;
 }
 
 .event-viewer-details {
@@ -2998,7 +3081,20 @@ html.js .reveal-right.revealed {
     <button class="event-viewer-close" id="event-viewer-close" aria-label="Fermer">×</button>
     <div class="event-viewer-card">
       <div class="event-viewer-image">
-        <img id="event-viewer-img" src="" alt="">
+        <div id="event-viewer-carousel" class="event-viewer-carousel">
+          <!-- Images will be loaded here -->
+        </div>
+        <button class="event-viewer-arrow event-viewer-arrow-left" id="event-viewer-prev" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="event-viewer-arrow event-viewer-arrow-right" id="event-viewer-next" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+        <div class="event-viewer-dots" id="event-viewer-dots" style="display:none"></div>
       </div>
       <div class="event-viewer-details">
         <div class="event-viewer-date" id="event-viewer-date"></div>
@@ -4035,6 +4131,8 @@ html.js .reveal-right.revealed {
   var eventViewerModal = $('#event-viewer');
   var eventViewerClose = $('#event-viewer-close');
   var currentEventData = null;
+  var eventViewerCarouselIndex = 0;
+  var eventViewerImages = [];
 
   function openEventViewer(event) {
     if (!eventViewerModal) return;
@@ -4042,15 +4140,20 @@ html.js .reveal-right.revealed {
     // Store full event data
     currentEventData = event;
 
-    // Populate modal with event data
-    $('#event-viewer-img').src = event.image;
-    $('#event-viewer-img').alt = event.title;
+    // Get images (support both old 'image' and new 'images' format)
+    eventViewerImages = event.images || (event.image ? [event.image] : []);
+    eventViewerCarouselIndex = 0;
+
+    // Populate event details
     $('#event-viewer-title').textContent = event.title;
     $('#event-viewer-description').textContent = event.description;
 
     // Format date
     var dateStr = formatEventDate(event.date);
     $('#event-viewer-date').textContent = dateStr;
+
+    // Initialize image carousel
+    initEventViewerCarousel();
 
     // Handle formules
     var formulesContainer = $('#event-viewer-formules');
@@ -4120,9 +4223,89 @@ html.js .reveal-right.revealed {
     return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
+  function initEventViewerCarousel() {
+    var carousel = $('#event-viewer-carousel');
+    var prevBtn = $('#event-viewer-prev');
+    var nextBtn = $('#event-viewer-next');
+    var dotsContainer = $('#event-viewer-dots');
+
+    if (!carousel) return;
+
+    // Build carousel HTML
+    carousel.innerHTML = eventViewerImages.map(function(imgUrl, index) {
+      return '<div class="event-viewer-carousel-item"><img src="' + imgUrl + '" alt="Image ' + (index + 1) + '"></div>';
+    }).join('');
+
+    // Show/hide navigation based on image count
+    if (eventViewerImages.length > 1) {
+      if (prevBtn) prevBtn.style.display = 'flex';
+      if (nextBtn) nextBtn.style.display = 'flex';
+      if (dotsContainer) dotsContainer.style.display = 'flex';
+
+      // Build dots
+      dotsContainer.innerHTML = eventViewerImages.map(function(_, index) {
+        return '<button class="event-viewer-dot' + (index === 0 ? ' active' : '') + '" data-index="' + index + '"></button>';
+      }).join('');
+
+      // Add dot click handlers
+      $$('.event-viewer-dot').forEach(function(dot) {
+        dot.addEventListener('click', function() {
+          eventViewerCarouselIndex = parseInt(this.dataset.index);
+          updateEventViewerCarousel();
+        });
+      });
+    } else {
+      if (prevBtn) prevBtn.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
+      if (dotsContainer) dotsContainer.style.display = 'none';
+    }
+
+    updateEventViewerCarousel();
+  }
+
+  function updateEventViewerCarousel() {
+    var carousel = $('#event-viewer-carousel');
+    if (!carousel) return;
+
+    carousel.style.transform = 'translateX(' + (-eventViewerCarouselIndex * 100) + '%)';
+
+    // Update dots
+    $$('.event-viewer-dot').forEach(function(dot, index) {
+      if (index === eventViewerCarouselIndex) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
+
+  function eventViewerCarouselPrev() {
+    if (eventViewerCarouselIndex > 0) {
+      eventViewerCarouselIndex--;
+      updateEventViewerCarousel();
+    }
+  }
+
+  function eventViewerCarouselNext() {
+    if (eventViewerCarouselIndex < eventViewerImages.length - 1) {
+      eventViewerCarouselIndex++;
+      updateEventViewerCarousel();
+    }
+  }
+
   // Close modal events
   if (eventViewerClose) {
     eventViewerClose.addEventListener('click', closeEventViewer);
+  }
+
+  // Carousel navigation
+  var eventViewerPrevBtn = $('#event-viewer-prev');
+  var eventViewerNextBtn = $('#event-viewer-next');
+  if (eventViewerPrevBtn) {
+    eventViewerPrevBtn.addEventListener('click', eventViewerCarouselPrev);
+  }
+  if (eventViewerNextBtn) {
+    eventViewerNextBtn.addEventListener('click', eventViewerCarouselNext);
   }
 
   if (eventViewerModal) {
