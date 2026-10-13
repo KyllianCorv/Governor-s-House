@@ -24,3 +24,14 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Claude Code / AI tools
+.claude/
+.agents/
+skills-lock.json
+data/skills/
+
+# Development documentation
+CARROUSEL_README.md
+DEPLOIEMENT_RAPIDE.md
+reset-options-tool.html
