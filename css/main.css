@@ -2306,28 +2306,42 @@ html.js .reveal-right.revealed {
 }
 
 @media (max-width: 768px) {
+  .event-viewer {
+    align-items: flex-start;
+    padding: 20px 0;
+  }
+
   .event-viewer-card {
     grid-template-columns: 1fr;
   }
 
   .event-viewer-image {
     aspect-ratio: 16/9;
+    max-height: 250px;
   }
 
   .event-viewer-content {
     width: 95%;
-    max-height: 85vh;
+    max-height: calc(100vh - 40px);
+    margin-top: 20px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .event-viewer-close {
-    top: -40px;
+    top: 4px;
+    right: 4px;
     width: 40px;
     height: 40px;
     font-size: 24px;
+    position: fixed;
   }
 
   .event-viewer-details {
     padding: 28px 24px;
+  }
+
+  .event-viewer-formules {
+    padding: 0 24px 24px;
   }
 }
 
