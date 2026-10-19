@@ -225,13 +225,13 @@
   <div class="nav-inner">
     <a href="#" class="nav-logo" aria-label="Governor's House - Accueil">The Governor's House</a>
     <ul class="nav-links" role="list">
-      <li><a href="#ile" data-nav="ile" data-i18n="nav.ile">L'île</a></li>
-      <li><a href="#formules" data-nav="formules" data-i18n="nav.formules">Formules</a></li>
-      <li><a href="#journee" data-nav="journee" data-i18n="nav.journee">La journée</a></li>
-      <li><a href="#options" data-nav="options" data-i18n="nav.options">Options</a></li>
-      <li><a href="#privatisation" data-nav="privatisation" data-i18n="nav.privatisation">Privatisation</a></li>
-      <li><a href="#galerie" data-nav="galerie" data-i18n="nav.galerie">Galerie</a></li>
-      <li><a href="#faq" data-nav="faq" data-i18n="nav.faq">FAQ</a></li>
+      <li><a href="#ile" data-nav="ile">L'île</a></li>
+      <li><a href="#formules" data-nav="formules">Formules</a></li>
+      <li><a href="#journee" data-nav="journee">La journée</a></li>
+      <li><a href="#options" data-nav="options">Options</a></li>
+      <li><a href="#privatisation" data-nav="privatisation">Privatisation</a></li>
+      <li><a href="#galerie" data-nav="galerie">Galerie</a></li>
+      <li><a href="#faq" data-nav="faq">FAQ</a></li>
     </ul>
     <div class="nav-right">
       <div class="lang-switcher">
@@ -241,7 +241,7 @@
           <span class="lang-other">EN</span>
         </button>
       </div>
-      <a href="#reserver" class="btn-primary nav-cta desktop-only" data-i18n="nav.cta">Réserver</a>
+      <a href="#reserver" class="btn-primary nav-cta desktop-only">Réserver</a>
       <button class="nav-burger" id="burger-btn" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobile-nav">
         <span></span><span></span><span></span>
       </button>
@@ -1109,27 +1109,40 @@
   var $$ = function(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); };
 
   /* ──────────────────────────────────────────
-     I18N - Internationalisation
+     I18N + TEXTES MODIFIABLES
+     Chaque texte de la page est identifié par son texte FR d'origine (celui du HTML).
+     EN par défaut : translations.js (associé via le texte FR).
+     Les textes modifiés par l'admin (/api/texts) passent par-dessus.
      ────────────────────────────────────────── */
-  // Translations are loaded from translations.js
   var translations = window.TRANSLATIONS || {};
-
   var currentLang = localStorage.getItem('lang') || 'fr';
+  var texts = {};      // texte FR d'origine -> { fr, en } depuis translations.js
+  var overrides = {};  // texte FR d'origine -> { fr, en } modifié depuis l'admin
 
-  function t(key) {
-    var keys = key.split('.');
-    var value = translations[currentLang];
-    for (var i = 0; i < keys.length; i++) {
-      value = value[keys[i]];
-      if (!value) return key;
+  function norm(s) { return s.replace(/\s+/g, ' ').trim(); }
+
+  (function pair(fr, en) {
+    for (var k in fr) {
+      if (typeof fr[k] === 'object') pair(fr[k], (en && en[k]) || {});
+      else texts[norm(fr[k])] = { fr: fr[k], en: (en && en[k]) || '' };
     }
-    return value;
+  })(translations.fr || {}, translations.en);
+
+  // Textes statiques de la page (le contenu chargé ensuite par JS, ex. événements, n'est pas concerné)
+  var textNodes = [];
+  var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    var tn = walker.currentNode;
+    if (!/[A-Za-zÀ-ÿ]/.test(tn.nodeValue) || tn.parentNode.closest('script, style, noscript, svg, option, textarea, #lang-btn')) continue;
+    var parts = tn.nodeValue.match(/^(\s*)([\s\S]*?)(\s*)$/);
+    textNodes.push({ node: tn, key: norm(parts[2]), orig: tn.nodeValue, pre: parts[1], post: parts[3] });
   }
 
   function applyTranslations() {
-    $$('[data-i18n]').forEach(function(el) {
-      var key = el.getAttribute('data-i18n');
-      el.textContent = t(key);
+    textNodes.forEach(function(t) {
+      var o = overrides[t.key] || {}, d = texts[t.key] || {};
+      var value = currentLang === 'en' ? (o.en || d.en || o.fr || t.key) : (o.fr || t.key);
+      t.node.nodeValue = value === t.key ? t.orig : t.pre + value + t.post;
     });
 
     // Update lang button
@@ -1157,8 +1170,84 @@
     applyTranslations();
   }
 
-  // Init language on page load
+  // Init language on page load (textes admin en cache pour éviter le flash de l'ancien texte)
+  try { overrides = JSON.parse(localStorage.getItem('site_texts')) || {}; } catch (e) {}
   applyTranslations();
+
+  fetch('/api/texts')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.texts) return;
+      overrides = data.texts;
+      try { localStorage.setItem('site_texts', JSON.stringify(overrides)); } catch (e) {}
+      applyTranslations();
+    })
+    .catch(function() {});
+
+  /* ── Mode édition : /?edit après connexion sur /admin ── */
+  var adminPassword = sessionStorage.getItem('admin_password');
+  if (/[?&]edit\b/.test(location.search) && adminPassword) {
+    document.documentElement.classList.add('edit-mode');
+
+    textNodes.forEach(function(t, i) {
+      var span = document.createElement('span');
+      span.className = 'gh-edit';
+      span.dataset.i = i;
+      t.node.parentNode.replaceChild(span, t.node);
+      span.appendChild(t.node);
+    });
+
+    var bar = document.createElement('div');
+    bar.className = 'gh-edit-bar';
+    bar.innerHTML = 'Mode édition · cliquez sur un texte pour le modifier · <a href="/admin">Retour à l\'admin</a>';
+    document.body.appendChild(bar);
+
+    var dlg = document.createElement('dialog');
+    dlg.className = 'gh-edit-dialog';
+    dlg.innerHTML =
+      '<form method="dialog">' +
+        '<p class="gh-edit-orig"></p>' +
+        '<label>Français<textarea name="fr" rows="4"></textarea></label>' +
+        '<label>English<textarea name="en" rows="4" placeholder="Vide = texte français"></textarea></label>' +
+        '<p class="gh-edit-hint">Videz les deux champs pour revenir au texte d\'origine.</p>' +
+        '<div class="gh-edit-actions"><button value="cancel" class="btn-secondary">Annuler</button><button value="save" class="btn-primary">Enregistrer</button></div>' +
+      '</form>';
+    document.body.appendChild(dlg);
+
+    var editing;
+    document.addEventListener('click', function(e) {
+      var span = e.target.closest && e.target.closest('.gh-edit');
+      if (!span) return;
+      e.preventDefault();
+      e.stopPropagation();
+      editing = textNodes[span.dataset.i];
+      var o = overrides[editing.key] || {}, d = texts[editing.key] || {};
+      dlg.querySelector('.gh-edit-orig').textContent = 'Texte d\'origine : ' + editing.key;
+      dlg.querySelector('[name=fr]').value = o.fr || editing.key;
+      dlg.querySelector('[name=en]').value = o.en || d.en || '';
+      dlg.returnValue = '';
+      dlg.showModal();
+    }, true);
+
+    dlg.addEventListener('close', function() {
+      if (dlg.returnValue !== 'save') return;
+      var key = editing.key;
+      var fr = dlg.querySelector('[name=fr]').value.trim();
+      var en = dlg.querySelector('[name=en]').value.trim();
+      fetch('/api/admin/update-texts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: adminPassword, key: key, fr: fr, en: en })
+      }).then(function(r) {
+        if (!r.ok) throw new Error(r.status);
+        if (fr || en) overrides[key] = { fr: fr, en: en };
+        else delete overrides[key];
+        applyTranslations();
+      }).catch(function() {
+        alert('Erreur : le texte n\'a pas été enregistré.');
+      });
+    });
+  }
 
   // Lang switcher click
   var langBtn = $('#lang-btn');

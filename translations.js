@@ -1,10 +1,9 @@
 // ============================================
 // TRANSLATIONS - Governor's House
 // ============================================
-// Pour ajouter une traduction :
-// 1. Ajouter la clé dans l'objet fr
-// 2. Ajouter la traduction correspondante dans l'objet en
-// 3. Dans le HTML, ajouter data-i18n="la.cle" sur l'élément
+// Traductions EN par défaut : un texte du HTML identique à une valeur fr
+// ci-dessous s'affiche avec la valeur en correspondante.
+// Le plus simple reste de modifier les textes depuis /admin → "Modifier les textes du site".
 
 var TRANSLATIONS = {
   fr: {
