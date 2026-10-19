@@ -1,0 +1,80 @@
+/* ============================================
+   MODE ÉDITION ADMIN (?edit) — chargé par site-texts.js
+   ============================================ */
+.gh-edit {
+  position: relative;
+  cursor: pointer;
+  outline: 1px dashed #B08D57;
+  outline-offset: 2px;
+}
+.gh-edit:hover { background: rgba(255,255,255,.9); color: #0E1B2C; }
+.gh-edit::after {
+  content: '✎';
+  position: absolute;
+  top: -.7em;
+  right: -.9em;
+  width: 18px;
+  height: 18px;
+  font: 12px/18px sans-serif;
+  font-style: normal;
+  text-align: center;
+  color: #0E1B2C;
+  background: #fff;
+  border: 1px solid #B08D57;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.edit-mode .faq-a { grid-template-rows: 1fr; }
+.gh-edit-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 10000;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 10px 18px;
+  font: 13px/1.5 sans-serif;
+  text-align: center;
+  color: #fff;
+  background: #0E1B2C;
+  border-radius: 16px;
+}
+.gh-edit-bar a { color: #B08D57; }
+.gh-edit-dialog {
+  width: min(560px, calc(100vw - 32px));
+  margin: auto;
+  padding: 24px;
+  border: 0;
+  border-radius: 8px;
+  font: 15px/1.5 sans-serif;
+  color: #0E1B2C;
+  background: #fff;
+}
+.gh-edit-dialog::backdrop { background: rgba(14,27,44,.6); }
+.gh-edit-dialog label { display: block; margin-bottom: 14px; font-size: 13px; font-weight: 600; }
+.gh-edit-dialog textarea {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  font: inherit;
+  font-weight: 400;
+  border: 1px solid rgba(14,27,44,.2);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.gh-edit-orig, .gh-edit-hint { margin: 0 0 14px; font-size: 12px; color: #8A8F98; }
+.gh-edit-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.gh-edit-actions button {
+  padding: 10px 20px;
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #0E1B2C;
+  background: #fff;
+  border: 1px solid #0E1B2C;
+  cursor: pointer;
+}
+.gh-edit-actions .gh-edit-save { color: #fff; background: #0E1B2C; }
