@@ -1130,19 +1130,25 @@
 
   // Textes statiques de la page (le contenu chargé ensuite par JS, ex. événements, n'est pas concerné)
   var textNodes = [];
+  var seen = {};
   var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
     var tn = walker.currentNode;
     if (!/[A-Za-zÀ-ÿ]/.test(tn.nodeValue) || tn.parentNode.closest('script, style, noscript, svg, option, textarea, #lang-btn')) continue;
     var parts = tn.nodeValue.match(/^(\s*)([\s\S]*?)(\s*)$/);
-    textNodes.push({ node: tn, key: norm(parts[2]), orig: tn.nodeValue, pre: parts[1], post: parts[3] });
+    var text = norm(parts[2]);
+    seen[text] = (seen[text] || 0) + 1;
+    // Texte répété (ex. « Réserver cette formule ») : une clé par emplacement pour les modifier séparément.
+    // shortcut: numéroté dans l'ordre de la page, ajouter une copie plus haut dans le HTML décale les suivantes
+    var key = seen[text] > 1 ? text + ' #' + seen[text] : text;
+    textNodes.push({ node: tn, text: text, key: key, orig: tn.nodeValue, pre: parts[1], post: parts[3] });
   }
 
   function applyTranslations() {
     textNodes.forEach(function(t) {
-      var o = overrides[t.key] || {}, d = texts[t.key] || {};
-      var value = currentLang === 'en' ? (o.en || d.en || o.fr || t.key) : (o.fr || t.key);
-      t.node.nodeValue = value === t.key ? t.orig : t.pre + value + t.post;
+      var o = overrides[t.key] || {}, d = texts[t.text] || {};
+      var value = currentLang === 'en' ? (o.en || d.en || o.fr || t.text) : (o.fr || t.text);
+      t.node.nodeValue = value === t.text ? t.orig : t.pre + value + t.post;
     });
 
     // Update lang button
@@ -1221,9 +1227,9 @@
       e.preventDefault();
       e.stopPropagation();
       editing = textNodes[span.dataset.i];
-      var o = overrides[editing.key] || {}, d = texts[editing.key] || {};
-      dlg.querySelector('.gh-edit-orig').textContent = 'Texte d\'origine : ' + editing.key;
-      dlg.querySelector('[name=fr]').value = o.fr || editing.key;
+      var o = overrides[editing.key] || {}, d = texts[editing.text] || {};
+      dlg.querySelector('.gh-edit-orig').textContent = 'Texte d\'origine : ' + editing.text;
+      dlg.querySelector('[name=fr]').value = o.fr || editing.text;
       dlg.querySelector('[name=en]').value = o.en || d.en || '';
       dlg.returnValue = '';
       dlg.showModal();
